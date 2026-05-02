@@ -1,23 +1,32 @@
+/* ============================================================================
+   THEME VARIABLES
+   
+   All colors live here so the whole UI can be re-themed by editing one block.
+   The app is dark-mode-only; if you want a light theme, override these vars
+   inside a `@media (prefers-color-scheme: light)` block.
+   ========================================================================== */
 :root {
-  --bg: #0f1115;
-  --bg-elev: #161a22;
-  --bg-card: #1b212c;
-  --border: #262d3a;
-  --border-strong: #344052;
+  --bg: #0f1115;             /* page background */
+  --bg-elev: #161a22;        /* slightly elevated surfaces (textareas, history) */
+  --bg-card: #1b212c;        /* response cards */
+  --border: #262d3a;         /* default border */
+  --border-strong: #344052;  /* hover/focus borders */
   --text: #e6e8ee;
   --text-muted: #9aa3b2;
-  --accent: #6ea8fe;
+  --accent: #6ea8fe;         /* primary button + focus ring */
   --accent-hover: #8ab8ff;
   --error: #ff6b6b;
   --success: #5dd39e;
-  --skeleton: #2a3140;
-  --skeleton-shine: #3a4358;
+  --skeleton: #2a3140;       /* base color of skeleton bars */
+  --skeleton-shine: #3a4358; /* highlight band that sweeps across them */
 }
 
+/* Reset: predictable box sizing across the whole tree. */
 * {
   box-sizing: border-box;
 }
 
+/* Body baseline: fonts, colors, line-height. */
 html, body {
   margin: 0;
   padding: 0;
@@ -28,10 +37,15 @@ html, body {
   line-height: 1.5;
 }
 
+/* Utility class — added/removed by JS to show/hide elements. */
 .hidden {
   display: none !important;
 }
 
+/* ============================================================================
+   CONFIG WARNING BANNER
+   Shown only when API keys are missing. Toggled via .hidden in script.js.
+   ========================================================================== */
 .config-warning {
   background: #3a2222;
   color: #ffd6d6;
@@ -46,6 +60,9 @@ html, body {
   border-radius: 3px;
 }
 
+/* ============================================================================
+   HEADER + LAYOUT CONTAINER
+   ========================================================================== */
 .app-header {
   padding: 24px 20px 8px;
   max-width: 1400px;
@@ -70,6 +87,9 @@ html, body {
   padding: 16px 20px 40px;
 }
 
+/* ============================================================================
+   PROMPT INPUTS
+   ========================================================================== */
 .prompt-area {
   display: flex;
   flex-direction: column;
@@ -92,7 +112,7 @@ textarea {
   padding: 10px 12px;
   font-family: inherit;
   font-size: 14px;
-  resize: vertical;
+  resize: vertical; /* allow vertical drag, but not horizontal */
 }
 
 textarea:focus {
@@ -100,6 +120,11 @@ textarea:focus {
   border-color: var(--accent);
 }
 
+/* ============================================================================
+   BUTTONS
+   .primary = Send to All (filled accent)
+   .secondary = Export JSON (outlined)
+   ========================================================================== */
 .actions {
   display: flex;
   gap: 10px;
@@ -143,6 +168,10 @@ button.secondary:hover:not(:disabled) {
   border-color: var(--accent);
 }
 
+/* ============================================================================
+   RESPONSE GRID
+   2x2 on wide screens, collapses to a single column under 800px.
+   ========================================================================== */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -155,6 +184,11 @@ button.secondary:hover:not(:disabled) {
   }
 }
 
+/* ============================================================================
+   CARD
+   One per model. Header shows name + provider + architecture badge; body holds
+   the response (or skeleton/error); footer shows OK/Failed status and timing.
+   ========================================================================== */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -179,7 +213,7 @@ button.secondary:hover:not(:disabled) {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
+  min-width: 0; /* allows overflow ellipsis on flex child */
 }
 
 .card-model {
@@ -195,6 +229,7 @@ button.secondary:hover:not(:disabled) {
   color: var(--text-muted);
 }
 
+/* Architecture badge — color-coded by .moe / .dense modifier. */
 .badge {
   font-size: 11px;
   padding: 3px 8px;
@@ -216,12 +251,13 @@ button.secondary:hover:not(:disabled) {
   color: #b9a8e0;
 }
 
+/* Card body: scrollable, preserves whitespace from the model output. */
 .card-body {
   flex: 1;
   max-height: 380px;
   overflow-y: auto;
   font-size: 14px;
-  white-space: pre-wrap;
+  white-space: pre-wrap; /* preserve newlines but wrap long lines */
   word-wrap: break-word;
 }
 
@@ -229,6 +265,7 @@ button.secondary:hover:not(:disabled) {
   color: var(--error);
 }
 
+/* Card footer: status + elapsed time, on opposite ends. */
 .card-footer {
   margin-top: 10px;
   padding-top: 10px;
@@ -239,6 +276,11 @@ button.secondary:hover:not(:disabled) {
   justify-content: space-between;
 }
 
+/* ============================================================================
+   SKELETON LOADER
+   Shimmer animation: a brighter band slides across a dim base via animated
+   background-position. Each line gets a slightly different width for variety.
+   ========================================================================== */
 .skeleton {
   display: flex;
   flex-direction: column;
@@ -248,11 +290,14 @@ button.secondary:hover:not(:disabled) {
 .skeleton-line {
   height: 12px;
   border-radius: 4px;
+  /* Three-stop gradient: dim → bright → dim. We animate background-position
+     to slide the bright band from right to left across the bar. */
   background: linear-gradient(90deg, var(--skeleton) 0%, var(--skeleton-shine) 50%, var(--skeleton) 100%);
   background-size: 200% 100%;
   animation: shine 1.4s infinite;
 }
 
+/* Vary widths so the skeleton looks like real paragraph text, not a table. */
 .skeleton-line:nth-child(1) { width: 90%; }
 .skeleton-line:nth-child(2) { width: 75%; }
 .skeleton-line:nth-child(3) { width: 95%; }
@@ -260,10 +305,14 @@ button.secondary:hover:not(:disabled) {
 .skeleton-line:nth-child(5) { width: 80%; }
 
 @keyframes shine {
-  0% { background-position: 200% 0; }
+  0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
+/* ============================================================================
+   SESSION HISTORY
+   <details>/<summary> for native collapse, with custom items underneath.
+   ========================================================================== */
 .history {
   margin-top: 26px;
 }
@@ -295,6 +344,7 @@ button.secondary:hover:not(:disabled) {
   gap: 6px;
 }
 
+/* Individual history item — clickable, restores that run on click. */
 .history-item {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -309,6 +359,7 @@ button.secondary:hover:not(:disabled) {
   border-color: var(--accent);
 }
 
+/* Truncated user prompt preview (full text lives in JS state). */
 .history-prompt {
   color: var(--text);
   margin-bottom: 4px;
@@ -324,6 +375,7 @@ button.secondary:hover:not(:disabled) {
   gap: 10px;
 }
 
+/* Status tags reused in card footers and history rows. */
 .tag-ok {
   color: var(--success);
 }
