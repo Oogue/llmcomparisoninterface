@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- Serve this through a local server (e.g. VS Code Live Server). Opening as file:// will fail CORS. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Comparison</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="config-warning" class="config-warning hidden">
+    Some API keys are missing in <code>config.js</code>. Fill them in to enable those models.
+  </div>
+
+  <header class="app-header">
+    <h1>LLM Comparison</h1>
+    <p class="subtitle">Send the same prompt to 4 models in parallel.</p>
+  </header>
+
+  <main class="container">
+    <section class="prompt-area">
+      <label for="system-prompt">System Prompt</label>
+      <textarea id="system-prompt" rows="3" placeholder="Optional system instructions sent to all models..."></textarea>
+
+      <label for="user-prompt">User Prompt</label>
+      <textarea id="user-prompt" rows="6" placeholder="Your test prompt..."></textarea>
+
+      <div class="actions">
+        <button id="send-btn" class="primary">Send to All</button>
+        <button id="export-btn" class="secondary" disabled>Export JSON</button>
+      </div>
+    </section>
+
+    <section class="grid" id="response-grid"></section>
+
+    <section class="history">
+      <details>
+        <summary>Session History (<span id="history-count">0</span>)</summary>
+        <ul id="history-list"></ul>
+      </details>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
