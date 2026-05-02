@@ -1,7 +1,7 @@
 const MODELS = [
   {
-    id: "gemini-2.0-flash",
-    name: "gemini-2.0-flash",
+    id: "gemini-2.5-flash",
+    name: "gemini-2.5-flash",
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
@@ -228,7 +228,7 @@ function restoreRun(idx) {
 async function callGemini(systemPrompt, userPrompt) {
   const key = CONFIG.GEMINI_API_KEY;
   if (!key || key === "your-key-here") throw new Error("GEMINI_API_KEY not set");
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
   const body = {
     contents: [{ role: "user", parts: [{ text: userPrompt }] }]
   };
