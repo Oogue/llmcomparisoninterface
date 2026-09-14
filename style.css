@@ -17,6 +17,7 @@
   --accent-hover: #8ab8ff;
   --error: #ff6b6b;
   --success: #5dd39e;
+  --warn: #f0b429;           /* CORS/network-blocked status */
   --skeleton: #2a3140;       /* base color of skeleton bars */
   --skeleton-shine: #3a4358; /* highlight band that sweeps across them */
 }
@@ -382,4 +383,11 @@ button.secondary:hover:not(:disabled) {
 
 .tag-fail {
   color: var(--error);
+}
+
+/* Distinct from .tag-fail: fetch() never got an HTTP response back at all,
+   which usually means the browser blocked the request (CORS) rather than
+   the provider returning an error. */
+.tag-cors {
+  color: var(--warn);
 }

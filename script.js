@@ -8,39 +8,217 @@
     keyName       - which CONFIG.* field this model needs to authenticate
     call(sys,user)- async function that sends the prompt and returns text
 */
+/*
+  The original 4 models (Gemini 2.5 Flash, Mistral Small [mistral-small-latest],
+  Llama 3.3 70B Versatile, Llama 4 Scout) were removed from this grid entirely —
+  all four, not just the two that had started 404ing on Groq. They predate the
+  Stage 1 accessibility-then-benchmark selection process that the current
+  candidates went through, so mixing them into the same comparison grid would
+  blur two different selection methodologies.
+
+  Every prior Stage 1 long-list (this THS-ST2 thesis round included) is
+  replaced wholesale, not merged — see README for the full lineage of earlier
+  rounds. This round's 10-candidate long-list, ranked by combined AA IFBench +
+  GPQA Diamond (Tier 1), with one Tier 2 (GPQA-D only) entry per the standing
+  addendum rule, live-verified 2026-09-14 against: OpenRouter's own
+  GET /v1/models catalog (for the `:free`-tagged entries), Google's native
+  GET /v1beta/models catalog plus a real chat-completions call (for the two
+  Gemma entries), and a live reasoning_effort call against both Gemini's and
+  Groq's OpenAI-compat endpoints (confirmed accepted as a top-level body
+  field, not nested — matches ai.google.dev's documented `reasoning_effort`
+  parameter for the OpenAI-compat layer). AA score figures themselves are
+  taken from the rewire doc, same as every prior round — this app verifies
+  *access*, not AA's own numbers.
+*/
 const MODELS = [
   {
-    id: "gemini-2.5-flash",
-    name: "gemini-2.5-flash",
+    // #1, Tier 1, combined 168.5 (GPQA-D 92.2 / IFBench 76.3). Google AI
+    // Studio direct, no reasoning_effort override — left at Gemini's
+    // documented default for this model, which is dynamic/auto thinking
+    // (Google's docs: "Gemini models engage in dynamic thinking by default,
+    // automatically adjusting reasoning effort based on request
+    // complexity"), NOT a fixed level. See the gemini-3-5-flash-medium
+    // entry below for why that distinction matters — the two are not the
+    // same call.
+    id: "gemini-3-5-flash",
+    name: "gemini-3.5-flash",
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: callGemini
+    call: (sys, user) => callGeminiCompat("gemini-3.5-flash", sys, user)
   },
   {
-    id: "llama-3.3-70b-versatile",
-    name: "llama-3.3-70b-versatile",
-    provider: "Groq",
+    // #2, Tier 1, combined 168.1 (GPQA-D 86.7 / IFBench 81.4). NEW ROUTE
+    // this round: OpenRouter's `nvidia/nemotron-3-ultra-550b-a55b:free`,
+    // confirmed live via GET /v1/models (pricing.prompt === 0, distinct
+    // from the paid `nvidia/nemotron-3-ultra-550b-a55b` listing also on the
+    // catalog — the :free suffix is load-bearing, not decorative). Earlier
+    // rounds only knew this model via NVIDIA NIM directly, which needs the
+    // local nim-proxy.js hop since NVIDIA's native API sends no CORS
+    // headers (see callNvidia()'s comment) — OpenRouter sends proper CORS
+    // headers, so this is called directly like Groq, no proxy needed.
+    //
+    // KNOWN COST OF THIS FREE ROUTE, flagged: live-tested twice, ~120s
+    // latency both times (120837ms, then 120313ms on immediate retest) —
+    // consistent, not a fluke. That's 3x the 40s shared default, so this
+    // entry passes timeoutMs: 150000 explicitly to avoid the timeout added
+    // this round firing on essentially every call; every other card still
+    // uses the 40s default.
+    id: "nemotron-3-ultra",
+    name: "nemotron-3-ultra-550b-a55b",
+    provider: "NVIDIA (via OpenRouter)",
+    architecture: "MoE",
+    keyName: "OPENROUTER_API_KEY",
+    call: (sys, user) => callOpenRouter("nvidia/nemotron-3-ultra-550b-a55b:free", sys, user, undefined, 150000)
+  },
+  {
+    // #3, Tier 1, combined 166.7 (GPQA-D 92.1 / IFBench 74.6). Same base
+    // model ID as gemini-3-5-flash above, `reasoning_effort: "medium"`
+    // forced. FLAGGED, not silently resolved (see the report for full
+    // context): gemini-3.5-flash's own documented default is ALSO "medium"
+    // — but as *dynamic* thinking (auto-adjusts per request), not a fixed
+    // level. Forcing reasoning_effort=medium here pins the level instead of
+    // letting it float, so this is a genuinely distinct call from the
+    // default entry above, not a duplicate — but the two may produce very
+    // similar output on simple prompts, since dynamic thinking on an easy
+    // prompt likely settles near "medium" anyway. Confirmed live that
+    // reasoning_effort is accepted as a top-level body field by this
+    // endpoint (HTTP 200, not rejected).
+    id: "gemini-3-5-flash-medium",
+    name: "gemini-3.5-flash (medium)",
+    provider: "Google",
     architecture: "Dense Transformer",
-    keyName: "GROQ_API_KEY",
-    // Both Groq models share callGroq() — we pass the model ID per-call.
-    call: (sys, user) => callGroq("llama-3.3-70b-versatile", sys, user)
+    keyName: "GEMINI_API_KEY",
+    call: (sys, user) => callGeminiCompat("gemini-3.5-flash", sys, user, { reasoning_effort: "medium" })
   },
   {
-    id: "llama-4-scout",
-    name: "llama-4-scout-17b-16e-instruct",
+    // #4, Tier 1, combined 161.3 (GPQA-D 85.7 / IFBench 75.6). ROUTE CHANGE
+    // this round: Google's own Gemini API directly, NOT OpenRouter's
+    // `google/gemma-4-31b-it:free` (which is still where an earlier round's
+    // gemma-4-31b entry pointed, and still exists on OpenRouter's catalog —
+    // just not used for this slot anymore). Confirmed live: `gemma-4-31b-it`
+    // is listed in this account's native GET /v1beta/models catalog and
+    // returns a real 200 via the same OpenAI-compat endpoint the Gemini
+    // cards use. WHY THE SWITCH: OpenRouter's `:free` gemma route has a
+    // documented history in this app of failing on shared-pool congestion
+    // (see callOpenRouter()'s comment) — going direct to Google avoids that
+    // specific failure mode, independent of whichever route scores higher.
+    // DISPLAY NOTE, flagged (see callGeminiCompat()'s comment for detail):
+    // this route's responses embed a "<thought>...</thought>" reasoning
+    // prefix directly in the visible message content, unlike every other
+    // card in this grid — the raw-response display will show it as-is.
+    //
+    // STABILITY NOTE, flagged: worked at wiring time (real 200, see report),
+    // but reconfirmed against the raw endpoint shortly after — 4/4 failures
+    // across two separate rounds, `HTTP 500 INTERNAL`, with and without
+    // `temperature` set. Isolated to this specific model ID: the same
+    // request shape against gemma-4-26b-a4b-it and gemini-3.5-flash both
+    // returned clean 200s in the same round of checks, so this isn't the
+    // account, the route, or this app's request format — looks like an
+    // upstream regression on Google's side for this one model, appearing
+    // sometime after it was first verified working. A 500 INTERNAL is a
+    // different failure class than gemini-3.8-flash's documented 503 "high
+    // demand" (which clears on retry) — not assumed to self-clear the same
+    // way, and no retry logic added here for that reason. Re-check before
+    // relying on this card for a real pilot run.
+    id: "gemma-4-31b",
+    name: "gemma-4-31b-it",
+    provider: "Google",
+    architecture: "Dense Transformer",
+    keyName: "GEMINI_API_KEY",
+    call: (sys, user) => callGeminiCompat("gemma-4-31b-it", sys, user)
+  },
+  {
+    // #5, Tier 1, combined 159.4 (GPQA-D 82.2 / IFBench 77.2). Google AI
+    // Studio direct, same callGeminiCompat() adapter as the other Gemini
+    // cards, no reasoning_effort override specified in the rewire doc so
+    // none is set here (left at this model's own default).
+    id: "gemini-3-1-flash-lite",
+    name: "gemini-3.1-flash-lite",
+    provider: "Google",
+    architecture: "Dense Transformer",
+    keyName: "GEMINI_API_KEY",
+    call: (sys, user) => callGeminiCompat("gemini-3.1-flash-lite", sys, user)
+  },
+  {
+    // #6, Tier 1, combined 151.6 (GPQA-D 79.2 / IFBench 72.4). Same route
+    // family as gemma-4-31b above: Google's own Gemini API directly, NOT
+    // OpenRouter — confirmed live the same way (listed in this account's
+    // native GET /v1beta/models catalog, real 200 via the OpenAI-compat
+    // endpoint). Same display note applies: reasoning text embeds directly
+    // in message content as "<thought>...</thought>", not kept separate.
+    id: "gemma-4-26b-a4b",
+    name: "gemma-4-26b-a4b-it",
+    provider: "Google",
+    architecture: "Dense Transformer",
+    keyName: "GEMINI_API_KEY",
+    call: (sys, user) => callGeminiCompat("gemma-4-26b-a4b-it", sys, user)
+  },
+  {
+    // #7, Tier 1, combined 151.5 (GPQA-D 80.0 / IFBench 71.5). Same route
+    // change as nemotron-3-ultra above: OpenRouter's
+    // `nvidia/nemotron-3-super-120b-a12b:free`, confirmed live via
+    // GET /v1/models (pricing.prompt === 0). No longer routed through NIM /
+    // nim-proxy.js this round.
+    id: "nemotron-3-super",
+    name: "nemotron-3-super-120b-a12b",
+    provider: "NVIDIA (via OpenRouter)",
+    architecture: "MoE",
+    keyName: "OPENROUTER_API_KEY",
+    call: (sys, user) => callOpenRouter("nvidia/nemotron-3-super-120b-a12b:free", sys, user)
+  },
+  {
+    // #8, Tier 1, combined 147.2 (GPQA-D 78.2 / IFBench 69.0).
+    // `reasoning_effort: "high"` forced, per the rewire doc's "(high
+    // reasoning effort)" qualifier on this specific candidate — this is
+    // what was actually benchmarked, so it's set explicitly rather than
+    // left at Groq's own default for gpt-oss-120b. Confirmed live that
+    // Groq's endpoint accepts reasoning_effort as a top-level field and
+    // returns reasoning in a separate message.reasoning field (not mixed
+    // into message.content the way Gemma's is) — only the content field is
+    // surfaced to the card either way, per callOpenAICompatChat()'s return.
+    id: "gpt-oss-120b-high",
+    name: "gpt-oss-120b (high)",
     provider: "Groq",
     architecture: "MoE",
     keyName: "GROQ_API_KEY",
-    call: (sys, user) => callGroq("meta-llama/llama-4-scout-17b-16e-instruct", sys, user)
+    call: (sys, user) => callGroq("openai/gpt-oss-120b", sys, user, { reasoning_effort: "high" })
   },
   {
-    id: "mistral-small-latest",
-    name: "mistral-small-latest",
-    provider: "Mistral",
+    // #9, Tier 1, combined 133.3 (GPQA-D 75.7 / IFBench 57.6). New to this
+    // app entirely. Confirmed live via OpenRouter's GET /v1/models:
+    // `cohere/north-mini-code:free` exists with genuine $0 pricing (not
+    // guessed off the rewire doc's say-so — this app's convention, see
+    // every other entry's comment, is to verify before wiring). ARCHITECTURE
+    // FLAGGED, not silently resolved: marked "Dense Transformer" below as a
+    // default guess only — this app has no prior confirmed source (AA page,
+    // Cohere docs, or otherwise) for North Mini Code's actual architecture,
+    // unlike every other entry in this array. Worth checking before this is
+    // presented anywhere the architecture badge itself is load-bearing.
+    id: "north-mini-code",
+    name: "north-mini-code",
+    provider: "Cohere (via OpenRouter)",
     architecture: "Dense Transformer",
-    keyName: "MISTRAL_API_KEY",
-    call: callMistral
+    keyName: "OPENROUTER_API_KEY",
+    call: (sys, user) => callOpenRouter("cohere/north-mini-code:free", sys, user)
+  },
+  {
+    // #10, Tier 2 — GPQA-D 95.3 only, no AA IFBench score published, ranked
+    // on GPQA Diamond alone per the standing addendum rule (Stage 2's
+    // pass/fail screening substitutes for the instruction-following check).
+    // `reasoning_effort: "high"` forced, per the rewire doc's qualifier on
+    // this candidate, same treatment as gpt-oss-120b (high) above. This
+    // model has a documented history in this app of transient 503 "high
+    // demand" responses that clear on retry (first seen when it was
+    // originally added; reconfirmed live this round: one 503, one 200 on
+    // retry) — not specific to reasoning_effort or this rewire, a standing
+    // property of this specific model.
+    id: "gemini-3-8-flash-high",
+    name: "gemini-3.8-flash (high)",
+    provider: "Google",
+    architecture: "Dense Transformer",
+    keyName: "GEMINI_API_KEY",
+    call: (sys, user) => callGeminiCompat("gemini-3.8-flash", sys, user, { reasoning_effort: "high" })
   }
 ];
 
@@ -77,9 +255,16 @@ function validateConfig() {
     return;
   }
 
-  // Collect any keys that are empty or still the placeholder value.
+  // Collect any keys that are empty or still the placeholder value. Only
+  // checks keys an active MODELS entry actually depends on. This round's
+  // 10-candidate list dropped NVIDIA_API_KEY and COHERE_API_KEY from this
+  // check — no current card uses either (Nemotron moved to OpenRouter,
+  // Command A+ isn't in this round's top 10; see callNvidia() / callCohere()
+  // for the still-intact-but-unused adapters). DEEPSEEK_API_KEY and
+  // MISTRAL_API_KEY were already excluded before this round, same reason
+  // (see callDeepSeek() / callMistral()).
   const missing = [];
-  for (const key of ["GEMINI_API_KEY", "GROQ_API_KEY", "MISTRAL_API_KEY"]) {
+  for (const key of ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"]) {
     const val = CONFIG[key];
     if (!val || val === "your-key-here") missing.push(key);
   }
@@ -158,7 +343,12 @@ function setCardResult(modelId, result) {
   if (result.error) {
     body.classList.add("error");
     body.textContent = `Error: ${result.error}`;
-    status.innerHTML = `<span class="tag-fail">Failed</span>`;
+    // fetch() throwing before an HTTP response ever came back usually means
+    // the browser blocked the request itself (CORS) or couldn't reach the
+    // host at all — distinct from a real HTTP error the server returned.
+    status.innerHTML = result.networkError
+      ? `<span class="tag-cors">CORS/Network</span>`
+      : `<span class="tag-fail">Failed</span>`;
   } else {
     body.classList.remove("error");
     // Use textContent (not innerHTML) so model output can't inject HTML.
@@ -166,6 +356,35 @@ function setCardResult(modelId, result) {
     status.innerHTML = `<span class="tag-ok">OK</span>`;
   }
   time.textContent = `${result.ms} ms`;
+}
+
+/*
+  callModel() - Runs one model's call() with timing + error handling, and
+  writes the result into that model's card. Pulled out of handleSend() so
+  every model goes through identical result-shaping logic.
+*/
+async function callModel(model, sysPrompt, userPrompt) {
+  const start = performance.now();
+  try {
+    const text = await model.call(sysPrompt, userPrompt);
+    const ms = Math.round(performance.now() - start);
+    const result = { modelId: model.id, modelName: model.name, provider: model.provider, text, ms, error: null };
+    setCardResult(model.id, result);
+    return result;
+  } catch (err) {
+    const ms = Math.round(performance.now() - start);
+    const result = {
+      modelId: model.id,
+      modelName: model.name,
+      provider: model.provider,
+      text: null,
+      ms,
+      error: err.message || String(err),
+      networkError: err instanceof NetworkError
+    };
+    setCardResult(model.id, result);
+    return result;
+  }
 }
 
 /*
@@ -194,26 +413,11 @@ async function handleSend() {
   // Timestamp for the run, used in history entries and export filenames.
   const startedAt = new Date().toISOString();
 
-  // Promise.all dispatches all four requests concurrently. Each model is
-  // wrapped in its own try/catch so a single failure doesn't reject the whole
-  // batch — failed models just record an error and the others continue.
-  const results = await Promise.all(
-    MODELS.map(async (model) => {
-      const start = performance.now();
-      try {
-        const text = await model.call(sysPrompt, userPrompt);
-        const ms = Math.round(performance.now() - start);
-        const result = { modelId: model.id, modelName: model.name, provider: model.provider, text, ms, error: null };
-        setCardResult(model.id, result);
-        return result;
-      } catch (err) {
-        const ms = Math.round(performance.now() - start);
-        const result = { modelId: model.id, modelName: model.name, provider: model.provider, text: null, ms, error: err.message || String(err) };
-        setCardResult(model.id, result);
-        return result;
-      }
-    })
-  );
+  // Promise.all dispatches every model's request concurrently. Each model
+  // is wrapped in its own try/catch (inside callModel) so a single failure
+  // doesn't reject the whole batch — failed models just record an error and
+  // the others continue.
+  const results = await Promise.all(MODELS.map((model) => callModel(model, sysPrompt, userPrompt)));
 
   // Record this run for history + export. unshift() puts newest first.
   lastRun = {
@@ -301,97 +505,383 @@ function restoreRun(idx) {
 }
 
 /*
-  PROVIDER ADAPTERS - Each function takes (systemPrompt, userPrompt) and returns 
-  the model's text response. They throw on HTTP errors so handleSend can route 
+  PROVIDER ADAPTERS - Each function takes (systemPrompt, userPrompt) and returns
+  the model's text response. They throw on HTTP errors so handleSend can route
   to the error branch of the card.
-*/ 
+*/
 
 /*
-  callGemini() — Google Generative AI REST API.
-  The Gemini schema differs from OpenAI's: messages are "contents" (with
-  role/parts), and a system prompt goes in a separate top-level
-  systemInstruction field rather than as a system message.
+  NetworkError - Thrown when fetch() itself rejects, i.e. no HTTP response
+  ever came back. Browsers deliberately don't distinguish "blocked by CORS"
+  from "couldn't reach the host" in this case, so we can't either — but we
+  CAN distinguish this from a real HTTP error response, which is what
+  handleSend() uses to show a separate "CORS/Network" badge instead of
+  "Failed".
 */
-async function callGemini(systemPrompt, userPrompt) {
-  const key = CONFIG.GEMINI_API_KEY;
-  if (!key || key === "your-key-here") throw new Error("GEMINI_API_KEY not set");
-  // API key is passed as a query parameter, not a header.
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
-  const body = {
-    contents: [{ role: "user", parts: [{ text: userPrompt }] }]
-  };
-  if (systemPrompt) {
-    body.systemInstruction = { parts: [{ text: systemPrompt }] };
+class NetworkError extends Error {}
+
+// Client-side timeout for every provider call. Previously there was no
+// bound at all: a stuck upstream (a 503 that never resolves, a dropped
+// connection) left a card spinning indefinitely instead of failing fast.
+// 40s picked as a middle point in the 30-45s range this was flagged at —
+// long enough that a real-but-slow response (observed up to ~85s on a
+// congested Gemini call, but that's the outlier, not the norm) isn't cut
+// off pre-emptively for every model, short enough that a hung card doesn't
+// block reading results from every other card in "Send to All".
+const REQUEST_TIMEOUT_MS = 40000;
+
+/*
+  callOpenAICompatChat() — Shared request builder for any provider exposing
+  an OpenAI-shaped chat completions endpoint (system/user messages in,
+  choices[0].message.content out). Confirmed compatible: NVIDIA NIM, Groq,
+  DeepSeek, Mistral, and Google's Gemini OpenAI-compat layer. Always sends
+  temperature: 0 — every adapter below goes through this, so there's a
+  single place enforcing it instead of six copies that could drift.
+
+  extraBody, when passed, is merged into the JSON request body — currently
+  used for reasoning_effort (Gemini's OpenAI-compat layer and Groq's
+  gpt-oss models both accept it as a top-level field; confirmed live for
+  both, not assumed from docs). extraBody is spread BEFORE temperature in
+  the body literal below, not after, specifically so a future extraBody
+  value can never silently override temperature: 0 — that field stays the
+  last word no matter what a caller passes in.
+
+  timeoutMs, when passed, overrides REQUEST_TIMEOUT_MS for this call only —
+  added for nemotron-3-ultra specifically (see its MODELS entry), which
+  live-tested at a consistent ~120s on OpenRouter's free route, well past
+  the 40s default. Left as a per-call override rather than raising the
+  global default, so every other card still fails fast on a real hang.
+*/
+async function callOpenAICompatChat({ endpoint, apiKey, apiKeyName, modelId, systemPrompt, userPrompt, onResponse, extraBody, timeoutMs = REQUEST_TIMEOUT_MS }) {
+  if (!apiKey || apiKey === "your-key-here") throw new Error(`${apiKeyName} not set`);
+  const messages = [];
+  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+  messages.push({ role: "user", content: userPrompt });
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  let res;
+  try {
+    res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ model: modelId, messages, ...extraBody, temperature: 0 }),
+      signal: controller.signal
+    });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new NetworkError(`Timed out after ${timeoutMs}ms waiting for a response`);
+    }
+    throw new NetworkError(err.message || "Network error (fetch failed before a response was received)");
+  } finally {
+    clearTimeout(timeoutId);
   }
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  // Optional hook for a caller that needs to inspect response headers (e.g.
+  // Cohere's trial-quota headers) without changing what this function
+  // returns to everyone else. No other current caller passes this.
+  if (onResponse) onResponse(res);
   if (!res.ok) {
     // Truncate the error body so a giant HTML 500 page doesn't fill the card.
     const errText = await res.text();
     throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
   }
   const data = await res.json();
-  // Response shape: candidates[0].content.parts[].text — concatenate all parts.
-  const text = data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") ?? "";
-  return text;
+  // OpenRouter (confirmed live; not seen from the other providers here) can
+  // return HTTP 200 with no `choices` at all and the real failure buried in
+  // a top-level `error` field instead — e.g. an upstream 502 "Service
+  // temporarily overloaded" from whichever provider it routed to behind a
+  // :free tag. Without this check that silently became `content: ""`,
+  // which the UI then shows as a misleading "OK" / "(empty response)" —
+  // indistinguishable from the model genuinely saying nothing. Checked
+  // regardless of res.ok, since this is a 200 wrapping a real failure.
+  if (data.error) {
+    const code = data.error.code ? ` (${data.error.code})` : "";
+    throw new Error(`Upstream error in HTTP 200 response${code}: ${data.error.message || JSON.stringify(data.error)}`);
+  }
+  return data?.choices?.[0]?.message?.content ?? "";
+}
+
+/*
+  callGeminiCompat() — Google's Gemini OpenAI-compatible layer. GEMINI_API_KEY
+  is sent as a Bearer token here (Google's native REST API instead takes it as
+  a query param, but that adapter isn't used by any current candidate).
+
+  Used for both the native Gemini Flash cards (3.5 / 3.1-flash-lite / 3.8) AND
+  the two Gemma cards (4-31b-it, 4-26b-a4b-it) — confirmed live that this same
+  endpoint serves Gemma model IDs directly under this account's GEMINI_API_KEY
+  (both listed in a native GET /v1beta/models call, both returned real 200s
+  here), not just via OpenRouter. NOTE: Gemma's responses embed a
+  "<thought>...reasoning text...</thought>" prefix directly inside
+  message.content (confirmed live) — unlike the Gemini-proper cards and unlike
+  Groq's gpt-oss (which returns reasoning in a separate message.reasoning
+  field, not mixed into content). This app displays response text raw/
+  unmodified, so the Gemma cards will visibly show that thought prefix. Not
+  stripped here — flagged instead, since silently stripping it would be a
+  product decision, not a wiring one.
+
+  extraBody is forwarded straight through to callOpenAICompatChat() — this is
+  how the reasoning-effort variant cards (gemini-3.5-flash medium,
+  gemini-3.8-flash high) set reasoning_effort without needing a separate
+  adapter. Confirmed live: reasoning_effort is accepted as a top-level body
+  field (not nested under extra_body) by this endpoint.
+*/
+async function callGeminiCompat(modelId, systemPrompt, userPrompt, extraBody, timeoutMs) {
+  return callOpenAICompatChat({
+    endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    apiKey: CONFIG.GEMINI_API_KEY,
+    apiKeyName: "GEMINI_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt,
+    extraBody,
+    timeoutMs
+  });
 }
 
 /*
   callGroq() — Groq Cloud, OpenAI-compatible chat completions endpoint.
-  Used by both the Llama 3.3 and Llama 4 Scout cards; the caller picks the
-  model by passing modelId.
+  Shared by every Groq-hosted card; the caller picks the model by passing
+  modelId. extraBody forwards through to callOpenAICompatChat() — used by the
+  gpt-oss-120b (high) card to set reasoning_effort: "high"; confirmed live
+  that Groq's endpoint accepts this field the same way Gemini's does.
 */
-async function callGroq(modelId, systemPrompt, userPrompt) {
-  const key = CONFIG.GROQ_API_KEY;
-  if (!key || key === "your-key-here") throw new Error("GROQ_API_KEY not set");
-  // OpenAI-style: system + user messages in a single array.
-  const messages = [];
-  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-  messages.push({ role: "user", content: userPrompt });
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // Bearer token auth — same pattern as OpenAI.
-      Authorization: `Bearer ${key}`
-    },
-    body: JSON.stringify({ model: modelId, messages })
+async function callGroq(modelId, systemPrompt, userPrompt, extraBody, timeoutMs) {
+  return callOpenAICompatChat({
+    endpoint: "https://api.groq.com/openai/v1/chat/completions",
+    apiKey: CONFIG.GROQ_API_KEY,
+    apiKeyName: "GROQ_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt,
+    extraBody,
+    timeoutMs
   });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
-  }
-  const data = await res.json();
-  return data?.choices?.[0]?.message?.content ?? "";
 }
 
 /*
   callMistral() — Mistral's chat completions endpoint, also OpenAI-shaped.
-  Identical request/response handling as Groq, just a different host and key.
+  Currently unused by any MODELS entry: Mistral Medium was replaced by
+  Gemini 3.5 Flash (billing issue, not a code issue — see the MODELS array
+  comment). Left intact, not deleted, same as callDeepSeek() below — a
+  one-line change per card if a Mistral model becomes worth using again.
 */
-async function callMistral(systemPrompt, userPrompt) {
-  const key = CONFIG.MISTRAL_API_KEY;
-  if (!key || key === "your-key-here") throw new Error("MISTRAL_API_KEY not set");
-  const messages = [];
-  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-  messages.push({ role: "user", content: userPrompt });
-  const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`
-    },
-    body: JSON.stringify({ model: "mistral-small-latest", messages })
+async function callMistral(modelId, systemPrompt, userPrompt) {
+  return callOpenAICompatChat({
+    endpoint: "https://api.mistral.ai/v1/chat/completions",
+    apiKey: CONFIG.MISTRAL_API_KEY,
+    apiKeyName: "MISTRAL_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt
   });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
+}
+
+/*
+  NIM_STAGGER_MS / scheduleNimSlot() — Originally added because NIM-routed
+  cards firing in the same instant on "Send to All" showed a 503 "Service
+  temporarily overloaded" and an unrelated-looking ETIMEDOUT landing in the
+  same batch — a shared-backend-under-load pattern, not evidence of a
+  protocol-level ceiling. Serializes just the *start* of each NIM call with
+  a small gap; each call still resolves independently once fired.
+
+  Currently UNUSED / inert: this round's MODELS array routes zero cards
+  through callNvidia() — nemotron-3-ultra and nemotron-3-super both moved to
+  OpenRouter's own `:free`-tagged listings this round (confirmed live; see
+  callOpenRouter()'s comment), and deepseek-v4-flash isn't in this round's
+  top 10 at all. Left in place rather than removed, per instruction — this
+  is shared, model-agnostic infrastructure, not specific to any one model
+  that passed through it, and callNvidia() below (also unused now) is a
+  one-line change per card away from being wired back in if a future round
+  moves a candidate back onto NIM.
+*/
+const NIM_STAGGER_MS = 400;
+let nimQueue = Promise.resolve();
+function scheduleNimSlot() {
+  const slot = nimQueue.then(() => new Promise((resolve) => setTimeout(resolve, NIM_STAGGER_MS)));
+  nimQueue = slot;
+  return slot;
+}
+
+/*
+  callNvidia() — NVIDIA NIM, OpenAI-compatible chat completions shape, but
+  routed through the local nim-proxy.js instead of hitting
+  integrate.api.nvidia.com directly. NVIDIA's hosted API sends no CORS
+  headers on this endpoint (confirmed by a live blocked browser call) and
+  has no officially supported way to enable them — see the comment atop
+  nim-proxy.js. Every other provider here sends proper CORS headers and is
+  called directly; NVIDIA is the only one needing this extra hop.
+
+  Currently unused by any MODELS entry (see the NIM_STAGGER_MS comment
+  above) — left intact, not deleted, same treatment as callMistral() /
+  callDeepSeek() below, in case a future round routes a candidate back
+  through NIM instead of OpenRouter.
+*/
+async function callNvidia(modelId, systemPrompt, userPrompt) {
+  await scheduleNimSlot();
+  return callOpenAICompatChat({
+    endpoint: "http://localhost:8787/v1/chat/completions",
+    apiKey: CONFIG.NVIDIA_API_KEY,
+    apiKeyName: "NVIDIA_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt
+  });
+}
+
+/*
+  logCohereQuota() — Reads Cohere's real trial-quota headers off each
+  response (rather than guessing with a client-side counter, which could
+  drift from the account's true state) and warns as the tighter of the two
+  limits gets close. Discovered live, not from docs: alongside the
+  documented x-endpoint-monthly-call-limit (1000/month across all Cohere
+  models on this key), the compatibility endpoint also carries its own
+  much tighter x-trial-endpoint-call-limit (20, separate window) — that
+  one is the real constraint for a Trial key and is what this warns on.
+*/
+// Real remaining count from the last response's x-trial-endpoint-call-
+// remaining header. Stays null until the first live call reports it —
+// callCohere() only hard-stops once it actually knows the account is close,
+// never on a guess.
+let cohereCallsRemaining = null;
+// Refuse new calls at/under this remaining count, well before the trial's
+// hard 20-call ceiling, so a pilot run can't blow through the whole quota
+// in one batch of "Send to All" clicks.
+const COHERE_HARD_STOP_THRESHOLD = 3;
+
+function logCohereQuota(res) {
+  const remaining = res.headers.get("x-trial-endpoint-call-remaining");
+  const limit = res.headers.get("x-trial-endpoint-call-limit");
+  const monthlyLimit = res.headers.get("x-endpoint-monthly-call-limit");
+  if (remaining === null) return;
+  cohereCallsRemaining = Number(remaining);
+  console.log(`Cohere trial quota: ${remaining}/${limit} left on this endpoint (monthly cap: ${monthlyLimit}).`);
+  if (cohereCallsRemaining <= 5) {
+    console.warn(`Cohere Command A+ is close to its trial endpoint call limit (${remaining} left) — calls will start failing soon on this key's tier.`);
   }
-  const data = await res.json();
-  return data?.choices?.[0]?.message?.content ?? "";
+}
+
+/*
+  callCohere() — Cohere's OpenAI-compatible chat completions endpoint.
+  Confirmed live: api.cohere.com and the docs' api.cohere.ai both resolve
+  to the same backend (identical 401 response without a key), and it sends
+  proper CORS headers, so it's called directly like Groq, rather than
+  through the NVIDIA proxy.
+
+  Hard-stops locally once logCohereQuota() has observed the trial-endpoint
+  count run down to COHERE_HARD_STOP_THRESHOLD, instead of only warning and
+  letting the next call hit a real 429 from Cohere.
+
+  Currently unused by any MODELS entry — command-a-plus isn't in this
+  round's top 10 (Cohere's still represented this round, though: see
+  north-mini-code, routed through callOpenRouter() instead). Left intact,
+  not deleted, same treatment as callMistral() / callDeepSeek() /
+  callNvidia() — a one-line change per card if Command A+ re-enters a future
+  round's list.
+*/
+async function callCohere(modelId, systemPrompt, userPrompt) {
+  if (cohereCallsRemaining !== null && cohereCallsRemaining <= COHERE_HARD_STOP_THRESHOLD) {
+    throw new Error(`Cohere trial endpoint call limit nearly exhausted (${cohereCallsRemaining} left) — refusing to spend more calls`);
+  }
+  return callOpenAICompatChat({
+    endpoint: "https://api.cohere.com/compatibility/v1/chat/completions",
+    apiKey: CONFIG.COHERE_API_KEY,
+    apiKeyName: "COHERE_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt,
+    onResponse: logCohereQuota
+  });
+}
+
+/*
+  callOpenRouter() — OpenRouter's OpenAI-compatible chat completions
+  endpoint, a routing layer in front of many providers' models. Confirmed
+  CORS-clean on preflight, so it's called directly rather than through a
+  proxy. Currently used by 3 cards: nemotron-3-ultra, nemotron-3-super (both
+  confirmed live on OpenRouter's catalog with genuine `:free`/$0 pricing —
+  new discovery this round; earlier sessions only knew these via NVIDIA NIM,
+  which needs the local nim-proxy.js hop since NVIDIA's native API sends no
+  CORS headers — see callNvidia() below, now unused but left intact) and
+  north-mini-code (Cohere's, also confirmed live with a genuine `:free` tag).
+  gemma-4-31b-it previously routed through here too; this round moved it to
+  Google's own Gemini API directly instead (see callGeminiCompat()) — no
+  longer routed through OpenRouter.
+
+  Retries on HTTP 429 with a fixed delay between attempts: gemma-4-31b-it's
+  `:free` tag (when it was still routed here) previously failed 4/4 with
+  "limit_source":"upstream_provider_shared_pool" — external congestion on
+  OpenRouter's shared free-tier routing, not this app's own traffic (see
+  README CORS notes), so retrying rides out transient upstream saturation
+  rather than fixing concurrency like the NIM stagger does. Kept generic
+  (not gemma-specific) since any `:free`-tagged OpenRouter route can hit the
+  same shared-pool congestion.
+
+  ALSO retries on the "upstream error in HTTP 200 response" case thrown by
+  callOpenAICompatChat() (see its comment) — confirmed live on
+  nemotron-3-super: 2 failures out of 8 calls, HTTP 200 with no `choices` and
+  a body-level `{"error":{"message":"Upstream error from Nvidia: Service
+  temporarily overloaded","code":502}}` instead. Same shared-congestion
+  shape as the 429 case, just surfaced differently — OpenRouter apparently
+  passes through whatever status shape the specific upstream provider it
+  routed to that instant returned, rather than always normalizing to a real
+  HTTP error. Without this, that failure mode was previously indistinguishable
+  from the model genuinely returning an empty response (content: ""),
+  and — worse — never triggered a retry at all, since no exception was ever
+  thrown for it before this fix.
+
+  extraBody forwards through to callOpenAICompatChat() on every attempt, same
+  as the other adapters, though none of the 3 current OpenRouter-routed
+  cards use it. timeoutMs also forwards through on every attempt — used by
+  nemotron-3-ultra (see its MODELS entry) to override the 40s default up to
+  150s for its consistently slow (~120s observed, live-tested twice) free-
+  tier route; the other 2 OpenRouter-routed cards don't need it and fall
+  back to the shared default.
+*/
+const OPENROUTER_MAX_ATTEMPTS = 3;
+const OPENROUTER_RETRY_DELAY_MS = 5000;
+async function callOpenRouter(modelId, systemPrompt, userPrompt, extraBody, timeoutMs) {
+  for (let attempt = 1; attempt <= OPENROUTER_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await callOpenAICompatChat({
+        endpoint: "https://openrouter.ai/api/v1/chat/completions",
+        apiKey: CONFIG.OPENROUTER_API_KEY,
+        apiKeyName: "OPENROUTER_API_KEY",
+        modelId,
+        systemPrompt,
+        userPrompt,
+        extraBody,
+        timeoutMs
+      });
+    } catch (err) {
+      const isRetryable = err instanceof Error &&
+        (/^HTTP 429/.test(err.message) || /^Upstream error in HTTP 200 response/.test(err.message));
+      if (!isRetryable || attempt === OPENROUTER_MAX_ATTEMPTS) throw err;
+      await new Promise((resolve) => setTimeout(resolve, OPENROUTER_RETRY_DELAY_MS));
+    }
+  }
+}
+
+/*
+  callDeepSeek() — DeepSeek's native chat completions endpoint, OpenAI-
+  shaped. Currently unused by any MODELS entry: deepseek-v4-flash routes
+  through callNvidia() instead (NVIDIA NIM hosts the same build and the
+  native account is balance-blocked — see the MODELS array comment). Left
+  intact, not deleted, so switching back is a one-line change if the
+  native account gets funded later.
+*/
+async function callDeepSeek(modelId, systemPrompt, userPrompt) {
+  return callOpenAICompatChat({
+    endpoint: "https://api.deepseek.com/chat/completions",
+    apiKey: CONFIG.DEEPSEEK_API_KEY,
+    apiKeyName: "DEEPSEEK_API_KEY",
+    modelId,
+    systemPrompt,
+    userPrompt
+  });
 }
 
 /*
