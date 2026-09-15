@@ -16,30 +16,49 @@
   candidates went through, so mixing them into the same comparison grid would
   blur two different selection methodologies.
 
-  Every prior Stage 1 long-list (this THS-ST2 thesis round included) is
-  replaced wholesale, not merged — see README for the full lineage of earlier
-  rounds. This round's 10-candidate long-list, ranked by combined AA IFBench +
-  GPQA Diamond (Tier 1), with one Tier 2 (GPQA-D only) entry per the standing
-  addendum rule, live-verified 2026-09-14 against: OpenRouter's own
-  GET /v1/models catalog (for the `:free`-tagged entries), Google's native
-  GET /v1beta/models catalog plus a real chat-completions call (for the two
-  Gemma entries), and a live reasoning_effort call against both Gemini's and
-  Groq's OpenAI-compat endpoints (confirmed accepted as a top-level body
-  field, not nested — matches ai.google.dev's documented `reasoning_effort`
-  parameter for the OpenAI-compat layer). AA score figures themselves are
-  taken from the rewire doc, same as every prior round — this app verifies
-  *access*, not AA's own numbers.
+  Every prior Stage 1 long-list is replaced wholesale, not merged — see README
+  for the full lineage of earlier rounds. This array holds the Stage 1
+  long-list DECIDED 2026-09-15 (THS-ST2-Stage1-LLM-Selection.md §1–§2, rules
+  R1–R9), which replaced the 2026-09-14 set:
+    - free-tier access only, documented by the provider (R1, R2)
+    - both AA benchmarks required — no GPQA-D-only "Tier 2" entries (R4)
+    - ranked by GPQA-D + IFBench sum (R5)
+    - one card per model, at its highest-scoring benchmarked setting, fixed
+      for every run like temperature (R6)
+    - standing free access only: no trial/evaluation keys, one-time
+      credits, or free routes governed by trial / evaluation-only terms
+      (R1); no preview models, and no models with an announced shutdown
+      date (R3)
+    - a model's fixed setting is its highest-scoring benchmarked setting
+      that completes within the provider's free-tier limits (R6)
+  First 2026-09-15 rewire: removed gemini-3-5-flash-medium (same model as #1,
+  lower-scoring setting — R6) and gemini-3-8-flash-high (GPQA-D only — R4);
+  added gpt-oss-20b-high and nemotron-3-nano-omni. Second 2026-09-15 rewire
+  (after the replacement search, THS-ST2-Stage1-Replacement-Search.md):
+  removed gemini-3-1-flash-lite (Google's deprecations page lists a May 7,
+  2027 shutdown date — R3); added gemini-2-5-flash. Third 2026-09-15 rewire
+  (after the before-freezing checks): removed nemotron-3-ultra,
+  nemotron-3-super and nemotron-3-nano-omni (their OpenRouter :free routes are
+  served under the NVIDIA API Trial Terms — "limited trial purposes only and
+  without use ... in production" — R1); switched gpt-oss-20b from "high" to
+  "low" ("high" never finishes within Groq's free 8K tokens-per-minute cap —
+  R6); added a shared MAX_TOKENS cap and Gemini/Groq retries (see
+  callOpenAICompatChat(), callGeminiCompat(), callGroq()). The list now has 7
+  eligible models, not 10. All cards live-verified (see
+  ../stage1-evidence/2026-09-15/calls/).
+  AA score figures themselves are taken from the Stage 1 handout — this app
+  verifies *access*, not AA's own numbers.
 */
 const MODELS = [
   {
-    // #1, Tier 1, combined 168.5 (GPQA-D 92.2 / IFBench 76.3). Google AI
-    // Studio direct, no reasoning_effort override — left at Gemini's
-    // documented default for this model, which is dynamic/auto thinking
-    // (Google's docs: "Gemini models engage in dynamic thinking by default,
-    // automatically adjusting reasoning effort based on request
-    // complexity"), NOT a fixed level. See the gemini-3-5-flash-medium
-    // entry below for why that distinction matters — the two are not the
-    // same call.
+    // #1, combined 168.5 (GPQA-D 92.2 / IFBench 76.3). Google AI Studio
+    // direct, no reasoning_effort override — left at Gemini's documented
+    // default for this model, which is dynamic/auto thinking (Google's docs:
+    // "Gemini models engage in dynamic thinking by default, automatically
+    // adjusting reasoning effort based on request complexity"). AA also
+    // scored a forced-"medium" setting (166.7); under R6 this model gets one
+    // card, at the higher-scoring default, so the former
+    // gemini-3-5-flash-medium card was removed.
     id: "gemini-3-5-flash",
     name: "gemini-3.5-flash",
     provider: "Google",
@@ -48,135 +67,64 @@ const MODELS = [
     call: (sys, user) => callGeminiCompat("gemini-3.5-flash", sys, user)
   },
   {
-    // #2, Tier 1, combined 168.1 (GPQA-D 86.7 / IFBench 81.4). NEW ROUTE
-    // this round: OpenRouter's `nvidia/nemotron-3-ultra-550b-a55b:free`,
-    // confirmed live via GET /v1/models (pricing.prompt === 0, distinct
-    // from the paid `nvidia/nemotron-3-ultra-550b-a55b` listing also on the
-    // catalog — the :free suffix is load-bearing, not decorative). Earlier
-    // rounds only knew this model via NVIDIA NIM directly, which needs the
-    // local nim-proxy.js hop since NVIDIA's native API sends no CORS
-    // headers (see callNvidia()'s comment) — OpenRouter sends proper CORS
-    // headers, so this is called directly like Groq, no proxy needed.
-    //
-    // KNOWN COST OF THIS FREE ROUTE, flagged: live-tested twice, ~120s
-    // latency both times (120837ms, then 120313ms on immediate retest) —
-    // consistent, not a fluke. That's 3x the 40s shared default, so this
-    // entry passes timeoutMs: 150000 explicitly to avoid the timeout added
-    // this round firing on essentially every call; every other card still
-    // uses the 40s default.
-    id: "nemotron-3-ultra",
-    name: "nemotron-3-ultra-550b-a55b",
-    provider: "NVIDIA (via OpenRouter)",
-    architecture: "MoE",
-    keyName: "OPENROUTER_API_KEY",
-    call: (sys, user) => callOpenRouter("nvidia/nemotron-3-ultra-550b-a55b:free", sys, user, undefined, 150000)
-  },
-  {
-    // #3, Tier 1, combined 166.7 (GPQA-D 92.1 / IFBench 74.6). Same base
-    // model ID as gemini-3-5-flash above, `reasoning_effort: "medium"`
-    // forced. FLAGGED, not silently resolved (see the report for full
-    // context): gemini-3.5-flash's own documented default is ALSO "medium"
-    // — but as *dynamic* thinking (auto-adjusts per request), not a fixed
-    // level. Forcing reasoning_effort=medium here pins the level instead of
-    // letting it float, so this is a genuinely distinct call from the
-    // default entry above, not a duplicate — but the two may produce very
-    // similar output on simple prompts, since dynamic thinking on an easy
-    // prompt likely settles near "medium" anyway. Confirmed live that
-    // reasoning_effort is accepted as a top-level body field by this
-    // endpoint (HTTP 200, not rejected).
-    id: "gemini-3-5-flash-medium",
-    name: "gemini-3.5-flash (medium)",
-    provider: "Google",
-    architecture: "Dense Transformer",
-    keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemini-3.5-flash", sys, user, { reasoning_effort: "medium" })
-  },
-  {
-    // #4, Tier 1, combined 161.3 (GPQA-D 85.7 / IFBench 75.6). ROUTE CHANGE
-    // this round: Google's own Gemini API directly, NOT OpenRouter's
-    // `google/gemma-4-31b-it:free` (which is still where an earlier round's
-    // gemma-4-31b entry pointed, and still exists on OpenRouter's catalog —
-    // just not used for this slot anymore). Confirmed live: `gemma-4-31b-it`
-    // is listed in this account's native GET /v1beta/models catalog and
-    // returns a real 200 via the same OpenAI-compat endpoint the Gemini
-    // cards use. WHY THE SWITCH: OpenRouter's `:free` gemma route has a
-    // documented history in this app of failing on shared-pool congestion
-    // (see callOpenRouter()'s comment) — going direct to Google avoids that
-    // specific failure mode, independent of whichever route scores higher.
+    // #2, combined 161.3 (GPQA-D 85.7 / IFBench 75.6). Google's own Gemini API
+    // directly, NOT OpenRouter's `google/gemma-4-31b-it:free` (still on
+    // OpenRouter's catalog, just not used for this slot). `gemma-4-31b-it` is
+    // listed in this account's native GET /v1beta/models catalog and responds
+    // via the same OpenAI-compat endpoint the Gemini cards use. WHY NOT
+    // OPENROUTER: its `:free` gemma route has a documented history in this app
+    // of failing on shared-pool congestion (see callOpenRouter()'s comment).
     // DISPLAY NOTE, flagged (see callGeminiCompat()'s comment for detail):
     // this route's responses embed a "<thought>...</thought>" reasoning
-    // prefix directly in the visible message content, unlike every other
-    // card in this grid — the raw-response display will show it as-is.
+    // prefix directly in the visible message content — the raw-response
+    // display will show it as-is.
     //
-    // STABILITY NOTE, flagged: worked at wiring time (real 200, see report),
-    // but reconfirmed against the raw endpoint shortly after — 4/4 failures
-    // across two separate rounds, `HTTP 500 INTERNAL`, with and without
-    // `temperature` set. Isolated to this specific model ID: the same
-    // request shape against gemma-4-26b-a4b-it and gemini-3.5-flash both
-    // returned clean 200s in the same round of checks, so this isn't the
-    // account, the route, or this app's request format — looks like an
-    // upstream regression on Google's side for this one model, appearing
-    // sometime after it was first verified working. A 500 INTERNAL is a
-    // different failure class than gemini-3.8-flash's documented 503 "high
-    // demand" (which clears on retry) — not assumed to self-clear the same
-    // way, and no retry logic added here for that reason. Re-check before
-    // relying on this card for a real pilot run.
+    // STABILITY NOTE, flagged: worked at wiring time (real 200), then 4/4
+    // `HTTP 500 INTERNAL` failures shortly after, with and without
+    // `temperature` set; re-checked 2026-09-15: 2/3 `HTTP 500`, 1 `200`, with
+    // 22–38 s latency on a one-word prompt. Isolated to this model ID (the
+    // same request shape against gemma-4-26b-a4b-it and gemini-3.5-flash
+    // returned clean 200s), so it looks like an upstream problem on Google's
+    // side. Re-checked again 2026-09-15 (before-freezing checks): 3 of 7 calls
+    // succeeded (24–34 s); the rest were 500/503, including a 500 on a real
+    // D.5 prompt. KEPT by group decision: callGeminiCompat() now retries HTTP
+    // 500/503, and this card passes timeoutMs: 90000 because successful calls
+    // take up to ~34 s and a 503 can take ~58 s to come back. Persistent
+    // failures count as infrastructure failures under the Stage 2 protocol
+    // (§8), not as task failures.
     id: "gemma-4-31b",
     name: "gemma-4-31b-it",
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemma-4-31b-it", sys, user)
+    call: (sys, user) => callGeminiCompat("gemma-4-31b-it", sys, user, undefined, 90000)
   },
   {
-    // #5, Tier 1, combined 159.4 (GPQA-D 82.2 / IFBench 77.2). Google AI
-    // Studio direct, same callGeminiCompat() adapter as the other Gemini
-    // cards, no reasoning_effort override specified in the rewire doc so
-    // none is set here (left at this model's own default).
-    id: "gemini-3-1-flash-lite",
-    name: "gemini-3.1-flash-lite",
-    provider: "Google",
-    architecture: "Dense Transformer",
-    keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemini-3.1-flash-lite", sys, user)
-  },
-  {
-    // #6, Tier 1, combined 151.6 (GPQA-D 79.2 / IFBench 72.4). Same route
-    // family as gemma-4-31b above: Google's own Gemini API directly, NOT
-    // OpenRouter — confirmed live the same way (listed in this account's
-    // native GET /v1beta/models catalog, real 200 via the OpenAI-compat
-    // endpoint). Same display note applies: reasoning text embeds directly
-    // in message content as "<thought>...</thought>", not kept separate.
+    // #3, combined 151.6 (GPQA-D 79.2 / IFBench 72.4). Same route family as
+    // gemma-4-31b above: Google's own Gemini API directly, NOT OpenRouter —
+    // listed in this account's native GET /v1beta/models catalog, real 200 via
+    // the OpenAI-compat endpoint. Same display note applies: reasoning text
+    // embeds directly in message content as "<thought>...</thought>".
+    // timeoutMs: 90000 (added 2026-09-15): a real Appendix D.5 prompt ran past
+    // the 40s default and timed out, same slowness as gemma-4-31b.
     id: "gemma-4-26b-a4b",
     name: "gemma-4-26b-a4b-it",
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemma-4-26b-a4b-it", sys, user)
+    call: (sys, user) => callGeminiCompat("gemma-4-26b-a4b-it", sys, user, undefined, 90000)
   },
   {
-    // #7, Tier 1, combined 151.5 (GPQA-D 80.0 / IFBench 71.5). Same route
-    // change as nemotron-3-ultra above: OpenRouter's
-    // `nvidia/nemotron-3-super-120b-a12b:free`, confirmed live via
-    // GET /v1/models (pricing.prompt === 0). No longer routed through NIM /
-    // nim-proxy.js this round.
-    id: "nemotron-3-super",
-    name: "nemotron-3-super-120b-a12b",
-    provider: "NVIDIA (via OpenRouter)",
-    architecture: "MoE",
-    keyName: "OPENROUTER_API_KEY",
-    call: (sys, user) => callOpenRouter("nvidia/nemotron-3-super-120b-a12b:free", sys, user)
-  },
-  {
-    // #8, Tier 1, combined 147.2 (GPQA-D 78.2 / IFBench 69.0).
-    // `reasoning_effort: "high"` forced, per the rewire doc's "(high
-    // reasoning effort)" qualifier on this specific candidate — this is
-    // what was actually benchmarked, so it's set explicitly rather than
-    // left at Groq's own default for gpt-oss-120b. Confirmed live that
-    // Groq's endpoint accepts reasoning_effort as a top-level field and
-    // returns reasoning in a separate message.reasoning field (not mixed
-    // into message.content the way Gemma's is) — only the content field is
-    // surfaced to the card either way, per callOpenAICompatChat()'s return.
+    // #4, combined 147.2 (GPQA-D 78.2 / IFBench 69.0). `reasoning_effort:
+    // "high"` forced — that's the setting AA benchmarked, and Groq's own
+    // default for gpt-oss is "medium" (Groq API reference), so it's set
+    // explicitly. Groq's endpoint accepts reasoning_effort as a top-level
+    // field and returns reasoning in a separate message.reasoning field (not
+    // mixed into message.content the way Gemma's is) — only the content field
+    // is surfaced to the card, per callOpenAICompatChat()'s return. Free
+    // access documented in Groq's rate-limits page, Free Plan table (30 RPM,
+    // 1K RPD, 8K TPM, 200K TPD); the 8K TPM cap may bite on long
+    // high-reasoning responses.
     id: "gpt-oss-120b-high",
     name: "gpt-oss-120b (high)",
     provider: "Groq",
@@ -185,40 +133,61 @@ const MODELS = [
     call: (sys, user) => callGroq("openai/gpt-oss-120b", sys, user, { reasoning_effort: "high" })
   },
   {
-    // #9, Tier 1, combined 133.3 (GPQA-D 75.7 / IFBench 57.6). New to this
-    // app entirely. Confirmed live via OpenRouter's GET /v1/models:
-    // `cohere/north-mini-code:free` exists with genuine $0 pricing (not
-    // guessed off the rewire doc's say-so — this app's convention, see
-    // every other entry's comment, is to verify before wiring). ARCHITECTURE
-    // FLAGGED, not silently resolved: marked "Dense Transformer" below as a
-    // default guess only — this app has no prior confirmed source (AA page,
-    // Cohere docs, or otherwise) for North Mini Code's actual architecture,
-    // unlike every other entry in this array. Worth checking before this is
-    // presented anywhere the architecture badge itself is load-bearing.
+    // #5, combined 133.3 (GPQA-D 75.7 / IFBench 57.6). OpenRouter's
+    // `cohere/north-mini-code:free`, confirmed via GET /v1/models and the
+    // per-model endpoints API with genuine $0 pricing (served by Cohere).
+    // ARCHITECTURE RESOLVED 2026-09-15: OpenRouter's model description says "A
+    // sparse mixture-of-experts model with 30B total parameters and 3B active"
+    // (saved in ../stage1-evidence/2026-09-15/docs/openrouter/), so the badge is
+    // now "MoE" (it was previously a "Dense Transformer" guess). Also the
+    // weakest task fit on the list: a coding-agent model with a low IFBench
+    // score.
     id: "north-mini-code",
     name: "north-mini-code",
     provider: "Cohere (via OpenRouter)",
-    architecture: "Dense Transformer",
+    architecture: "MoE",
     keyName: "OPENROUTER_API_KEY",
     call: (sys, user) => callOpenRouter("cohere/north-mini-code:free", sys, user)
   },
   {
-    // #10, Tier 2 — GPQA-D 95.3 only, no AA IFBench score published, ranked
-    // on GPQA Diamond alone per the standing addendum rule (Stage 2's
-    // pass/fail screening substitutes for the instruction-following check).
-    // `reasoning_effort: "high"` forced, per the rewire doc's qualifier on
-    // this candidate, same treatment as gpt-oss-120b (high) above. This
-    // model has a documented history in this app of transient 503 "high
-    // demand" responses that clear on retry (first seen when it was
-    // originally added; reconfirmed live this round: one 503, one 200 on
-    // retry) — not specific to reasoning_effort or this rewire, a standing
-    // property of this specific model.
-    id: "gemini-3-8-flash-high",
-    name: "gemini-3.8-flash (high)",
+    // #6, combined 129.3 (GPQA-D 79.0 / IFBench 50.3). ADDED in the second
+    // 2026-09-15 rewire, found by the replacement search. AA's record is
+    // "Gemini 2.5 Flash (Reasoning)" — this model's default is dynamic
+    // thinking (on), so no reasoning_effort override is sent; its
+    // "(Non-reasoning)" setting scored lower (107.3), so under R6 this card
+    // uses the default. Note: AA's separate "Gemini 2.5 Flash Preview
+    // (Sep '25)" record is a different model ID, not this one. Free access
+    // documented on Google's Gemini API pricing page (Free Tier: "Free of
+    // charge"); deprecations page: "No shutdown date announced" (both saved in
+    // ../stage1-evidence/2026-09-15/docs/). Live-verified 2026-09-15 (HTTP
+    // 200). AVAILABILITY RISK, flagged: Google already returns "no longer
+    // available to new users" for gemini-2.5-pro and gemini-2.5-flash-lite.
+    id: "gemini-2-5-flash",
+    name: "gemini-2.5-flash",
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemini-3.8-flash", sys, user, { reasoning_effort: "high" })
+    call: (sys, user) => callGeminiCompat("gemini-2.5-flash", sys, user)
+  },
+  {
+    // #7, combined 118.9 (GPQA-D 61.1 / IFBench 57.8) at `reasoning_effort:
+    // "low"`. CHANGED in the third 2026-09-15 rewire from "high" (133.9):
+    // on real Appendix D.5 prompts, "high" spent the whole 7,400-token budget
+    // on reasoning and never produced an answer, and Groq's Free Plan caps
+    // this model at 8K tokens per minute, so there's no room to raise it. "low"
+    // is the next-highest setting AA benchmarked and returned valid JSON (12
+    // microtasks, ~750 tokens, 1–1.5 s) on the same prompts
+    // (../stage1-evidence/2026-09-15/calls/freeze-checks/). Rule R6 was amended
+    // to "highest-scoring benchmarked setting that completes within the
+    // provider's free-tier limits." Separate card from #4 because it's a
+    // different model (different weights). Free access documented in Groq's
+    // Free Plan table (30 RPM, 1K RPD, 8K TPM, 200K TPD).
+    id: "gpt-oss-20b-low",
+    name: "gpt-oss-20b (low)",
+    provider: "Groq",
+    architecture: "MoE",
+    keyName: "GROQ_API_KEY",
+    call: (sys, user) => callGroq("openai/gpt-oss-20b", sys, user, { reasoning_effort: "low" })
   }
 ];
 
@@ -256,13 +225,13 @@ function validateConfig() {
   }
 
   // Collect any keys that are empty or still the placeholder value. Only
-  // checks keys an active MODELS entry actually depends on. This round's
-  // 10-candidate list dropped NVIDIA_API_KEY and COHERE_API_KEY from this
-  // check — no current card uses either (Nemotron moved to OpenRouter,
-  // Command A+ isn't in this round's top 10; see callNvidia() / callCohere()
-  // for the still-intact-but-unused adapters). DEEPSEEK_API_KEY and
-  // MISTRAL_API_KEY were already excluded before this round, same reason
-  // (see callDeepSeek() / callMistral()).
+  // checks keys an active MODELS entry actually depends on. The 2026-09-15
+  // list still uses only Gemini, Groq and OpenRouter keys. NVIDIA_API_KEY and
+  // COHERE_API_KEY stay out of this check — no current card uses either
+  // (Nemotron routes through OpenRouter; see callNvidia() / callCohere() for
+  // the still-intact-but-unused adapters). DEEPSEEK_API_KEY and
+  // MISTRAL_API_KEY are excluded for the same reason (see callDeepSeek() /
+  // callMistral()).
   const missing = [];
   for (const key of ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"]) {
     const val = CONFIG[key];
@@ -530,6 +499,17 @@ class NetworkError extends Error {}
 // block reading results from every other card in "Send to All".
 const REQUEST_TIMEOUT_MS = 40000;
 
+// Uniform output cap sent with EVERY request (like temperature). Added in the
+// third 2026-09-15 rewire: without any max_tokens, Groq's gpt-oss models fell
+// back to a short provider default (3,072 / 2,048 tokens) and stopped
+// mid-reasoning with no answer on real Appendix D.5 prompts. 7400 was the
+// largest value that fits under Groq's Free Plan cap of 8K tokens per minute
+// per model with a ~350-token prompt; gpt-oss-120b (high) completed with
+// valid JSON at ~4,300–4,800 total tokens. Kept identical across all cards so
+// every model runs under the same conditions (manuscript §5.2). Revisit if the
+// Stage 2 dry run shows any model finishing with finish_reason "length".
+const MAX_TOKENS = 7400;
+
 /*
   callOpenAICompatChat() — Shared request builder for any provider exposing
   an OpenAI-shaped chat completions endpoint (system/user messages in,
@@ -546,11 +526,14 @@ const REQUEST_TIMEOUT_MS = 40000;
   value can never silently override temperature: 0 — that field stays the
   last word no matter what a caller passes in.
 
+  max_tokens is set the same way: MAX_TOKENS is spread after extraBody, so no
+  caller can change the shared output cap for one card.
+
   timeoutMs, when passed, overrides REQUEST_TIMEOUT_MS for this call only —
-  added for nemotron-3-ultra specifically (see its MODELS entry), which
-  live-tested at a consistent ~120s on OpenRouter's free route, well past
-  the 40s default. Left as a per-call override rather than raising the
-  global default, so every other card still fails fast on a real hang.
+  originally added for nemotron-3-ultra (removed 2026-09-15), which took ~120s
+  on OpenRouter's free route; now used by gemma-4-31b (90s, see its MODELS
+  entry). Left as a per-call override rather than raising the global default,
+  so every other card still fails fast on a real hang.
 */
 async function callOpenAICompatChat({ endpoint, apiKey, apiKeyName, modelId, systemPrompt, userPrompt, onResponse, extraBody, timeoutMs = REQUEST_TIMEOUT_MS }) {
   if (!apiKey || apiKey === "your-key-here") throw new Error(`${apiKeyName} not set`);
@@ -569,7 +552,7 @@ async function callOpenAICompatChat({ endpoint, apiKey, apiKeyName, modelId, sys
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`
       },
-      body: JSON.stringify({ model: modelId, messages, ...extraBody, temperature: 0 }),
+      body: JSON.stringify({ model: modelId, messages, ...extraBody, max_tokens: MAX_TOKENS, temperature: 0 }),
       signal: controller.signal
     });
   } catch (err) {
@@ -610,7 +593,7 @@ async function callOpenAICompatChat({ endpoint, apiKey, apiKeyName, modelId, sys
   is sent as a Bearer token here (Google's native REST API instead takes it as
   a query param, but that adapter isn't used by any current candidate).
 
-  Used for both the native Gemini Flash cards (3.5 / 3.1-flash-lite / 3.8) AND
+  Used for both the native Gemini Flash cards (3.5 / 2.5) AND
   the two Gemma cards (4-31b-it, 4-26b-a4b-it) — confirmed live that this same
   endpoint serves Gemma model IDs directly under this account's GEMINI_API_KEY
   (both listed in a native GET /v1beta/models call, both returned real 200s
@@ -624,22 +607,37 @@ async function callOpenAICompatChat({ endpoint, apiKey, apiKeyName, modelId, sys
   product decision, not a wiring one.
 
   extraBody is forwarded straight through to callOpenAICompatChat() — this is
-  how the reasoning-effort variant cards (gemini-3.5-flash medium,
-  gemini-3.8-flash high) set reasoning_effort without needing a separate
-  adapter. Confirmed live: reasoning_effort is accepted as a top-level body
+  how a card sets reasoning_effort without needing a separate adapter. No
+  current Gemini card passes one (the gemini-3.5-flash medium and
+  gemini-3.8-flash high cards that did were removed in the 2026-09-15
+  rewire), but the path is kept for future use. Confirmed live: reasoning_effort is accepted as a top-level body
   field (not nested under extra_body) by this endpoint.
 */
+const GEMINI_MAX_ATTEMPTS = 3;
+const GEMINI_RETRY_DELAY_MS = 5000;
 async function callGeminiCompat(modelId, systemPrompt, userPrompt, extraBody, timeoutMs) {
-  return callOpenAICompatChat({
-    endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-    apiKey: CONFIG.GEMINI_API_KEY,
-    apiKeyName: "GEMINI_API_KEY",
-    modelId,
-    systemPrompt,
-    userPrompt,
-    extraBody,
-    timeoutMs
-  });
+  // Retries HTTP 500 / 503 only (added 2026-09-15 for gemma-4-31b-it, which
+  // returned 500 INTERNAL or 503 "high demand" on 4 of 7 calls in the
+  // before-freezing checks; gemini-3.8-flash earlier showed the same 503).
+  // Other errors (400, 404, 429 quota) are real and surface immediately.
+  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await callOpenAICompatChat({
+        endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        apiKey: CONFIG.GEMINI_API_KEY,
+        apiKeyName: "GEMINI_API_KEY",
+        modelId,
+        systemPrompt,
+        userPrompt,
+        extraBody,
+        timeoutMs
+      });
+    } catch (err) {
+      const isRetryable = err instanceof Error && /^HTTP 50[03]/.test(err.message);
+      if (!isRetryable || attempt === GEMINI_MAX_ATTEMPTS) throw err;
+      await new Promise((resolve) => setTimeout(resolve, GEMINI_RETRY_DELAY_MS));
+    }
+  }
 }
 
 /*
@@ -649,17 +647,32 @@ async function callGeminiCompat(modelId, systemPrompt, userPrompt, extraBody, ti
   gpt-oss-120b (high) card to set reasoning_effort: "high"; confirmed live
   that Groq's endpoint accepts this field the same way Gemini's does.
 */
+const GROQ_MAX_ATTEMPTS = 3;
+const GROQ_RETRY_DELAY_MS = 20000;
 async function callGroq(modelId, systemPrompt, userPrompt, extraBody, timeoutMs) {
-  return callOpenAICompatChat({
-    endpoint: "https://api.groq.com/openai/v1/chat/completions",
-    apiKey: CONFIG.GROQ_API_KEY,
-    apiKeyName: "GROQ_API_KEY",
-    modelId,
-    systemPrompt,
-    userPrompt,
-    extraBody,
-    timeoutMs
-  });
+  // Retries HTTP 429 only (added 2026-09-15). Groq's Free Plan allows 8K
+  // tokens per minute per model, and one gpt-oss-120b (high) response uses
+  // ~4,300–4,800 tokens, so two sends of the same prompt within a minute hit
+  // 429 (seen live in the before-freezing checks). A 20s wait lets the
+  // per-minute window partly reset before retrying.
+  for (let attempt = 1; attempt <= GROQ_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await callOpenAICompatChat({
+        endpoint: "https://api.groq.com/openai/v1/chat/completions",
+        apiKey: CONFIG.GROQ_API_KEY,
+        apiKeyName: "GROQ_API_KEY",
+        modelId,
+        systemPrompt,
+        userPrompt,
+        extraBody,
+        timeoutMs
+      });
+    } catch (err) {
+      const isRetryable = err instanceof Error && /^HTTP 429/.test(err.message);
+      if (!isRetryable || attempt === GROQ_MAX_ATTEMPTS) throw err;
+      await new Promise((resolve) => setTimeout(resolve, GROQ_RETRY_DELAY_MS));
+    }
+  }
 }
 
 /*
@@ -801,12 +814,15 @@ async function callCohere(modelId, systemPrompt, userPrompt) {
   callOpenRouter() — OpenRouter's OpenAI-compatible chat completions
   endpoint, a routing layer in front of many providers' models. Confirmed
   CORS-clean on preflight, so it's called directly rather than through a
-  proxy. Currently used by 3 cards: nemotron-3-ultra, nemotron-3-super (both
+  proxy. Currently used by 1 card, north-mini-code. Earlier it also served
+  nemotron-3-ultra, nemotron-3-super (both
   confirmed live on OpenRouter's catalog with genuine `:free`/$0 pricing —
   new discovery this round; earlier sessions only knew these via NVIDIA NIM,
   which needs the local nim-proxy.js hop since NVIDIA's native API sends no
   CORS headers — see callNvidia() below, now unused but left intact) and
-  north-mini-code (Cohere's, also confirmed live with a genuine `:free` tag).
+  north-mini-code (Cohere's, also confirmed live with a genuine `:free` tag),
+  and nemotron-3-nano-omni (added 2026-09-15, genuine `:free` tag, live 200);
+  all three Nemotron cards were removed on 2026-09-15 (NVIDIA API Trial Terms).
   gemma-4-31b-it previously routed through here too; this round moved it to
   Google's own Gemini API directly instead (see callGeminiCompat()) — no
   longer routed through OpenRouter.
