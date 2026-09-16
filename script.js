@@ -6,7 +6,13 @@
     provider      - sub-label shown under the name
     architecture  - "Dense Transformer" or "MoE"; controls badge styling
     keyName       - which CONFIG.* field this model needs to authenticate
-    call(sys,user)- async function that sends the prompt and returns text
+    adapter       - provider function (callGeminiCompat / callGroq / callOpenRouter)
+    upstream      - the provider's own model ID, as sent in the request
+    params        - optional per-model request fields (e.g. reasoning_effort)
+    timeoutMs     - optional per-model timeout override (default REQUEST_TIMEOUT_MS)
+  call(sys,user) is attached automatically below from adapter/upstream/params/
+  timeoutMs, so the request and the exported run record can never disagree about
+  which model ID or settings were used.
 */
 /*
   The original 4 models (Gemini 2.5 Flash, Mistral Small [mistral-small-latest],
@@ -64,7 +70,8 @@ const MODELS = [
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemini-3.5-flash", sys, user)
+    adapter: callGeminiCompat,
+    upstream: "gemini-3.5-flash"
   },
   {
     // #2, combined 161.3 (GPQA-D 85.7 / IFBench 75.6). Google's own Gemini API
@@ -97,7 +104,9 @@ const MODELS = [
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemma-4-31b-it", sys, user, undefined, 90000)
+    adapter: callGeminiCompat,
+    upstream: "gemma-4-31b-it",
+    timeoutMs: 90000
   },
   {
     // #3, combined 151.6 (GPQA-D 79.2 / IFBench 72.4). Same route family as
@@ -112,7 +121,9 @@ const MODELS = [
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemma-4-26b-a4b-it", sys, user, undefined, 90000)
+    adapter: callGeminiCompat,
+    upstream: "gemma-4-26b-a4b-it",
+    timeoutMs: 90000
   },
   {
     // #4, combined 147.2 (GPQA-D 78.2 / IFBench 69.0). `reasoning_effort:
@@ -130,7 +141,9 @@ const MODELS = [
     provider: "Groq",
     architecture: "MoE",
     keyName: "GROQ_API_KEY",
-    call: (sys, user) => callGroq("openai/gpt-oss-120b", sys, user, { reasoning_effort: "high" })
+    adapter: callGroq,
+    upstream: "openai/gpt-oss-120b",
+    params: { reasoning_effort: "high" }
   },
   {
     // #5, combined 133.3 (GPQA-D 75.7 / IFBench 57.6). OpenRouter's
@@ -147,7 +160,8 @@ const MODELS = [
     provider: "Cohere (via OpenRouter)",
     architecture: "MoE",
     keyName: "OPENROUTER_API_KEY",
-    call: (sys, user) => callOpenRouter("cohere/north-mini-code:free", sys, user)
+    adapter: callOpenRouter,
+    upstream: "cohere/north-mini-code:free"
   },
   {
     // #6, combined 129.3 (GPQA-D 79.0 / IFBench 50.3). ADDED in the second
@@ -167,7 +181,8 @@ const MODELS = [
     provider: "Google",
     architecture: "Dense Transformer",
     keyName: "GEMINI_API_KEY",
-    call: (sys, user) => callGeminiCompat("gemini-2.5-flash", sys, user)
+    adapter: callGeminiCompat,
+    upstream: "gemini-2.5-flash"
   },
   {
     // #7, combined 118.9 (GPQA-D 61.1 / IFBench 57.8) at `reasoning_effort:
@@ -187,9 +202,27 @@ const MODELS = [
     provider: "Groq",
     architecture: "MoE",
     keyName: "GROQ_API_KEY",
-    call: (sys, user) => callGroq("openai/gpt-oss-20b", sys, user, { reasoning_effort: "low" })
+    adapter: callGroq,
+    upstream: "openai/gpt-oss-20b",
+    params: { reasoning_effort: "low" }
   }
 ];
+
+/*
+  Attach each entry's call() from its adapter/upstream/params/timeoutMs. Done
+  here rather than inline in the array so that what gets sent and what gets
+  logged in the export come from the same fields (added 2026-09-16 for the
+  Stage 2 runs).
+*/
+MODELS.forEach((model) => {
+  model.call = (sys, user) => model.adapter(model.upstream, sys, user, model.params, model.timeoutMs);
+});
+
+/*
+  APP_VERSION is written into every exported run so a result file can be traced
+  back to the exact interface version that produced it.
+*/
+const APP_VERSION = "stage1-v1.0 (7 candidates), export schema 2 — 2026-09-16";
 
 /*
   IN-MEMORY STATE - Nothing is persisted to disk or localStorage, refreshing the 
@@ -337,7 +370,18 @@ async function callModel(model, sysPrompt, userPrompt) {
   try {
     const text = await model.call(sysPrompt, userPrompt);
     const ms = Math.round(performance.now() - start);
-    const result = { modelId: model.id, modelName: model.name, provider: model.provider, text, ms, error: null };
+    const result = {
+      modelId: model.id,
+      modelName: model.name,
+      provider: model.provider,
+      architecture: model.architecture,
+      upstreamModelId: model.upstream,
+      requestParams: model.params ?? null,
+      timeoutMs: model.timeoutMs ?? REQUEST_TIMEOUT_MS,
+      text,
+      ms,
+      error: null
+    };
     setCardResult(model.id, result);
     return result;
   } catch (err) {
@@ -346,6 +390,10 @@ async function callModel(model, sysPrompt, userPrompt) {
       modelId: model.id,
       modelName: model.name,
       provider: model.provider,
+      architecture: model.architecture,
+      upstreamModelId: model.upstream,
+      requestParams: model.params ?? null,
+      timeoutMs: model.timeoutMs ?? REQUEST_TIMEOUT_MS,
       text: null,
       ms,
       error: err.message || String(err),
@@ -364,6 +412,7 @@ async function callModel(model, sysPrompt, userPrompt) {
 async function handleSend() {
   const sysPrompt = document.getElementById("system-prompt").value.trim();
   const userPrompt = document.getElementById("user-prompt").value.trim();
+  const runLabel = document.getElementById("run-label").value.trim();
   if (!userPrompt) {
     alert("Please enter a user prompt.");
     return;
@@ -390,7 +439,12 @@ async function handleSend() {
 
   // Record this run for history + export. unshift() puts newest first.
   lastRun = {
+    runLabel: runLabel || null,
     timestamp: startedAt,
+    appVersion: APP_VERSION,
+    // Conditions held constant for every model on every run (Stage 1 v1.0 /
+    // manuscript 5.2). Recorded here so an exported run is self-describing.
+    fixedConditions: { temperature: 0, max_tokens: MAX_TOKENS, providerJsonMode: false },
     systemPrompt: sysPrompt,
     userPrompt,
     responses: results
@@ -414,9 +468,12 @@ function handleExport() {
   const blob = new Blob([JSON.stringify(lastRun, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const safeStamp = lastRun.timestamp.replace(/[:.]/g, "-");
+  // Run label first in the filename so Stage 2 exports sort by prompt and run
+  // (e.g. llm-run-S2-P1-run1-2026-....json).
+  const safeLabel = lastRun.runLabel ? lastRun.runLabel.replace(/[^A-Za-z0-9._-]/g, "-") + "-" : "";
   const a = document.createElement("a");
   a.href = url;
-  a.download = `llm-run-${safeStamp}.json`;
+  a.download = `llm-run-${safeLabel}${safeStamp}.json`;
   document.body.appendChild(a);
   a.click();
   // Clean up the temporary link and free the blob URL.
@@ -443,7 +500,7 @@ function renderHistory() {
     const failCount = run.responses.length - okCount;
     const time = new Date(run.timestamp).toLocaleTimeString();
     li.innerHTML = `
-      <div class="history-prompt">${escapeHtml(truncated)}</div>
+      <div class="history-prompt">${run.runLabel ? `<strong>${escapeHtml(run.runLabel)}</strong> — ` : ""}${escapeHtml(truncated)}</div>
       <div class="history-meta">
         <span>${time}</span>
         <span class="tag-ok">${okCount} ok</span>
@@ -465,6 +522,7 @@ function restoreRun(idx) {
   if (!run) return;
   document.getElementById("system-prompt").value = run.systemPrompt;
   document.getElementById("user-prompt").value = run.userPrompt;
+  document.getElementById("run-label").value = run.runLabel || "";
   for (const model of MODELS) {
     const r = run.responses.find((x) => x.modelId === model.id);
     if (r) setCardResult(model.id, r);

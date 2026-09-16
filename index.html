@@ -2,8 +2,8 @@
 <!--
   LLM Comparison Interface
 
-  Sends the same system + user prompt to 10 LLMs (across 6 providers) in
-  parallel and shows their responses side by side.
+  Sends the same system + user prompt to the 7 Stage 1 v1.0 candidate models
+  (Google, Groq, OpenRouter) in parallel and shows their responses side by side.
 
   IMPORTANT: Serve this through a local server (e.g. VS Code Live Server).
   Opening as file:// will fail because browsers block fetch() on file URLs and
@@ -25,12 +25,18 @@
   <!-- Page title and subtitle. -->
   <header class="app-header">
     <h1>LLM Comparison</h1>
-    <p class="subtitle">Send the same prompt to 10 models in parallel.</p>
+    <p class="subtitle">Send the same prompt to 7 models in parallel.</p>
   </header>
 
   <main class="container">
     <!-- Prompt inputs and action buttons. -->
     <section class="prompt-area">
+      <!-- Run label: identifies this run in the export (e.g. S2-P1-run1 for
+           Stage 2). Optional, but fill it in for Stage 2 / formal evaluation so
+           each exported file identifies itself. -->
+      <label for="run-label">Run label <span class="hint">(optional, e.g. <code>S2-P1-run1</code>)</span></label>
+      <input id="run-label" type="text" placeholder="S2-P1-run1" />
+
       <!-- System prompt: shapes the model's role/tone. Optional. -->
       <label for="system-prompt">System Prompt</label>
       <textarea id="system-prompt" rows="3" placeholder="Optional system instructions sent to all models..."></textarea>

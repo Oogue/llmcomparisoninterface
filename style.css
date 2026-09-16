@@ -104,7 +104,9 @@ html, body {
   margin-top: 8px;
 }
 
-textarea {
+/* Run-label input (added 2026-09-16): same look as the textareas, one line. */
+textarea,
+input[type="text"] {
   width: 100%;
   background: var(--bg-elev);
   color: var(--text);
@@ -116,7 +118,8 @@ textarea {
   resize: vertical; /* allow vertical drag, but not horizontal */
 }
 
-textarea:focus {
+textarea:focus,
+input[type="text"]:focus {
   outline: none;
   border-color: var(--accent);
 }
@@ -390,4 +393,11 @@ button.secondary:hover:not(:disabled) {
    the provider returning an error. */
 .tag-cors {
   color: var(--warn);
+}
+
+/* Inline hint text next to a label (e.g. the run-label example). */
+.prompt-area label .hint {
+  font-weight: 400;
+  color: var(--text-dim, #8b93a7);
+  font-size: 12px;
 }
