@@ -1,3 +1,35 @@
+## Current status: Stage 3 formal evaluation (4 finalists)
+
+Stage 2 is complete: **4 of the 7 Stage 1 candidates passed** and move on to formal evaluation
+(manuscript §5.3). The grid now shows only those four; everything below this section is the
+Stage 1 / Stage 2 history and is left as it was written.
+
+| Model | Stage 1 score | Route |
+|---|---:|---|
+| Gemini 3.5 Flash | 168.5 | Google (free tier) |
+| Gemma 4 26B A4B | 151.6 | Google (free tier) |
+| North Mini Code | 133.3 | OpenRouter free route (Cohere) |
+| Gemini 2.5 Flash | 129.3 | Google (free tier) |
+
+The 3 excluded models are kept in code, not deleted, in `MODELS_DORMANT` in `script.js`, each with
+its exclusion reason: Gemma 4 31B (failed C2 on S2-P3), gpt-oss-120b (failed C1 on S2-P2, C2 on
+S2-P2/S2-P3) and gpt-oss-20b (failed C2 on S2-P2/S2-P3, C3 on S2-P4/S2-P5). Both Groq models are
+gone, so `callGroq()` is fully dormant.
+
+- **Conditions unchanged:** `temperature: 0`, `max_tokens: 7400`, same provider routing.
+- **Timeout:** `REQUEST_TIMEOUT_MS` is now 180 s for every card (was 40 s, 90 s for the Gemma
+  cards). Every Stage 2 export records `timeoutMs: 180000`; the committed code had drifted from the
+  copy that ran Stage 2. This only bounds how long a hung call may sit before it is logged as an API
+  failure.
+- **North Mini Code quota:** the limit that applies is OpenRouter's free-model cap (50 requests a
+  day on this key), not Cohere's direct-API trial headers. `assertOpenRouterQuota()` reads it from
+  `GET /api/v1/key` before every send and refuses to send when fewer than 3 requests are left.
+- **Prompts:** `stage3/prompts.json` (and `stage3/STAGE3-D5-PROMPTS.md`) hold the 10 Appendix D.5
+  prompts and the system prompt. Two edits to D.5 are **proposed, not yet confirmed by the group**:
+  Fix A (JSON output tail on the system prompt) and Fix B (prompt 4 drops "Create an outline I can
+  base my writing on, and").
+- **The 120-response run:** see [Formal evaluation batch](#formal-evaluation-batch-stage-3).
+
 ## Models used
 
 This section tracks the Stage 1 long-list (see `../THS-ST2-Stage1-LLM-Selection.md`) and the
@@ -220,11 +252,11 @@ has a model that qualifies under the current rules (see the Stage 1 handout, Sec
    For Stage 2 and formal evaluation, use the JSON system prompt from the Stage 2 protocol draft
    (§4).
 2. Type a **User Prompt** — the actual question or task.
-3. Click **Send to All**. All 7 models are queried in parallel. Cards show a loading shimmer until
-   each response arrives. A stuck card is cut off by the client-side timeout: 40 s by default, 90 s
-   for the Gemma cards. Retries can add time.
-   - **Don't send twice within a minute:** the gpt-oss-120b card uses about half of Groq's 8K
-     tokens-per-minute allowance per call, so a quick resend will be retried or fail with `429`.
+3. Click **Send to All**. All 4 finalists are queried in parallel. Cards show a loading shimmer until
+   each response arrives. A stuck card is cut off by the client-side timeout (180 s). Retries can
+   add time.
+   - **North Mini Code's quota:** each send costs it at least one of OpenRouter's 50 free-model
+     requests a day. Below 3 left, Send to All refuses with a message instead of sending.
 4. Each card displays the raw response text (never reformatted — this is why the Gemma cards show
    their `<thought>...</thought>` prefix, see above), a status (**OK** / **Failed** /
    **CORS/Network**), and elapsed time in ms.
@@ -245,13 +277,44 @@ has a model that qualifies under the current rules (see the Stage 1 handout, Sec
 > The proxy and its stagger logic (`NIM_STAGGER_MS`) are left in the codebase, inert — see
 > [CORS notes](#cors-notes).
 
+## Formal evaluation batch (Stage 3)
+
+**10 Appendix D.5 prompts × 3 runs × 4 finalists = 120 responses**, sent as 30 "Send to All" calls.
+It is a loop around the same `dispatchToAll()` the button uses (`batch.js`), not a new dispatch
+path, and the request/cleaning code is untouched.
+
+**In the page:** open **Formal evaluation batch**, choose the `stage3-evidence` folder (Chrome or
+Edge), and click **Start / resume batch**. Each send is written to `exports/` in that folder as
+`llm-run-S3-P<n>-run<n>-<timestamp>.json`, and `RUN-LOG.md` is rewritten after every send.
+
+**From the command line** (same `script.js`, no browser):
+
+```
+node stage3/run_headless.mjs --live-test     # one Send to All, prints status/latency, saves nothing
+node stage3/run_headless.mjs                 # the batch -> stage3-evidence/exports/ + RUN-LOG.md
+```
+
+Node has no CORS, so it can't show a browser-side CORS problem; Stage 1/2 already covered that.
+Each export from the batch carries a `batch` field (`stage`, `promptId`, `run`, `attempt`,
+`runner`) saying which runner produced it.
+
+- **Failures** follow the Stage 2 convention: a send with an API failure (after the adapters' own
+  retries) is exported anyway, then only the failed models are re-sent after a 60 s / 120 s backoff
+  as `S3-P<n>-run<n>-retry` and `-retry2`. A retry only fills in a response that failed with an
+  API error; a badly formatted response is a result, not a failure, and is never re-sent. Anything
+  still failing after `-retry2` is listed as unresolved in `RUN-LOG.md`.
+- **Pacing:** 20 s minimum between sends (adjustable). If OpenRouter's free-model quota runs low,
+  the batch **pauses** rather than spend the last requests; run it again after the daily reset and
+  it resumes from what is already in `exports/`.
+- **Evidence** goes in `stage3-evidence/`, separate from Stage 2's.
+
 ## CORS notes
 
 CORS behavior per provider, confirmed with real requests from a live browser:
 
 | Provider | CORS headers present? | Behavior |
 |---|---|---|
-| Groq, OpenRouter, Google (OpenAI-compat) | Yes | Called directly from the browser — covers all 7 current cards |
+| Groq, OpenRouter, Google (OpenAI-compat) | Yes | Called directly from the browser — covers all 4 current cards (Google and OpenRouter; Groq is dormant) |
 | Cohere, Mistral | Yes | Confirmed CORS-fine, but currently unused — no active card calls either |
 | NVIDIA NIM | **No** | Would route through the local `nim-proxy.js` if used — currently inert |
 
@@ -298,9 +361,12 @@ been silently recorded as a successful empty response in an exported run.
 
 ## File structure
 
-- `index.html` - UI layout, loads config.js then script.js
+- `index.html` - UI layout, loads config.js, then script.js, then batch.js
 - `style.css` - Dark theme, responsive grid, skeleton animation
 - `script.js` - Model registry, send logic, history, provider adapters
+- `batch.js` - Stage 3 batch runner: loops Send to All over the D.5 prompts, retries, pacing, quota pause, RUN-LOG.md
+- `stage3/` - `prompts.json` / `STAGE3-D5-PROMPTS.md` (the 10 D.5 prompts + system prompt), `run_headless.mjs` (Node runner and live test)
+- `stage3-evidence/` - Stage 3 exports and run log (separate from Stage 2's)
 - `nim-proxy.js` - Minimal local CORS proxy for NVIDIA NIM (currently inert — no active card routes through NIM, see CORS notes)
 - `config.js` - Your API keys (gitignored)
 - `config.example.js` - Safe template committed to the repo

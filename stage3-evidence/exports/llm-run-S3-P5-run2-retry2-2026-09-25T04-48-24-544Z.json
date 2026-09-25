@@ -1,0 +1,33 @@
+{
+  "runLabel": "S3-P5-run2-retry2",
+  "timestamp": "2026-09-25T04:48:24.544Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I am writing the scope and limitations section for our research paper on peer pressure and risk-taking behavior among adolescents. We will only have high school students from our partner schools as participants. Another limitation is that we are not measuring long-term behavioral outcomes beyond the school year. Create microtasks that I can accomplish procedurally to complete this section of the paper.",
+  "responses": [
+    {
+      "modelId": "north-mini-code",
+      "modelName": "north-mini-code",
+      "provider": "Cohere (via OpenRouter)",
+      "architecture": "MoE",
+      "upstreamModelId": "cohere/north-mini-code:free",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "{\"microtasks\": [{\"id\": 1, \"description\": \"Review journal guidelines for scope and limitations section formatting.\", \"prerequisites\": []}, {\"id\": 2, \"description\": \"Draft a brief overview of the study's focus (peer pressure and risk-taking behavior among adolescents).\", \"prerequisites\": []}, {\"id\": 3, \"description\": \"List and describe the participant inclusion criteria (high school students from partner schools, age range, grades).\", \"prerequisites\": []}, {\"id\": 4, \"description\": \"List and describe the participant exclusion criteria (non\\u2011partner schools, younger/older students, etc.).\", \"prerequisites\": []}, {\"id\": 5, \"description\": \"Define the geographic and institutional scope (partner schools only).\", \"prerequisites\": []}, {\"id\": 6, \"description\": \"Define the temporal scope (one school year).\", \"prerequisites\": []}, {\"id\": 7, \"description\": \"Identify and list the primary outcomes to be measured (e.g., self\\u2011reported peer pressure exposure, risk\\u2011taking behavior scales).\", \"prerequisites\": []}, {\"id\": 8, \"description\": \"Identify and list any secondary outcomes (if applicable).\", \"prerequisites\": []}, {\"id\": 9, \"description\": \"Write the first draft of the scope paragraph incorporating population, setting, timeframe, and focus.\", \"prerequisites\": [1, 2, 3, 4, 5, 6, 7, 8]}, {\"id\": 10, \"description\": \"Write the first draft of the limitations paragraph addressing sample generalizability (partner schools only).\", \"prerequisites\": [1, 3, 4, 5]}, {\"id\": 11, \"description\": \"Write the first draft of the limitations paragraph addressing temporal limitation (no long\\u2011term follow\\u2011up).\", \"prerequisites\": [1, 6]}, {\"id\": 12, \"description\": \"Write the first draft of the limitations paragraph addressing other potential limitations (e.g., self\\u2011report bias, cross\\u2011sectional design).\", \"prerequisites\": [1, 7]}, {\"id\": 13, \"description\": \"Combine drafts into a cohesive scope and limitations section (integrate paragraphs).\", \"prerequisites\": [9, 10, 11, 12]}, {\"id\": 14, \"description\": \"Edit and proofread the scope and limitations section for clarity and adherence to guidelines.\", \"prerequisites\": [13]}, {\"id\": 15, \"description\": \"Seek feedback from supervisor or peers on the scope and limitations section.\", \"prerequisites\": [14]}]}",
+      "ms": 17912,
+      "error": null
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P5",
+    "run": 2,
+    "attempt": 2,
+    "runner": "headless-node"
+  }
+}

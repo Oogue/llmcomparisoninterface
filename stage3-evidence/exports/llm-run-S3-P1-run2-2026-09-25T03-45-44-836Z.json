@@ -1,0 +1,70 @@
+{
+  "runLabel": "S3-P1-run2",
+  "timestamp": "2026-09-25T03:45:44.836Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I need to write the Background of the Study section for a research paper on the effects of social media use on teenagers. The paper argues that excessive social media use is linked to increased anxiety and lower self-esteem among teenagers. Break this down into microtasks I can start working on immediately.",
+  "responses": [
+    {
+      "modelId": "gemini-3-5-flash",
+      "modelName": "gemini-3.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-3.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "{\n  \"microtasks\": [\n    {\n      \"id\": 1,\n      \"description\": \"Search for and collect 3-5 key statistics regarding teenage social media consumption habits, such as daily screen time and platform preferences.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 2,\n      \"description\": \"Search for and collect 3-5 academic studies linking social media use to adolescent anxiety.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 3,\n      \"description\": \"Search for and collect 3-5 academic studies linking social media use to adolescent self-esteem.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 4,\n      \"description\": \"Create a detailed outline for the Background of the Study section, structuring it from broad context to the specific variables of anxiety and self-esteem.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 5,\n      \"description\": \"Draft the opening paragraph introducing the ubiquity of social media in modern teenage life using the collected statistics.\",\n      \"prerequisites\": [1, 4]\n    },\n    {\n      \"id\": 6,\n      \"description\": \"Draft the paragraphs detailing the historical rise of social media and the corresponding shifts in teenage mental health trends over the last decade.\",\n      \"prerequisites\": [1, 4]\n    },\n    {\n      \"id\": 7,\n      \"description\": \"Draft the subsection synthesizing literature on the link between excessive social media use and teenage anxiety.\",\n      \"prerequisites\": [2, 4]\n    },\n    {\n      \"id\": 8,\n      \"description\": \"Draft the subsection synthesizing literature on the link between excessive social media use and low self-esteem.\",\n      \"prerequisites\": [3, 4]\n    },\n    {\n      \"id\": 9,\n      \"description\": \"Draft the paragraph identifying the gap in current literature or the specific need for this study to transition into the problem statement.\",\n      \"prerequisites\": [7, 8]\n    },\n    {\n      \"id\": 10,\n      \"description\": \"Combine the drafted subsections into a single cohesive narrative and write transition sentences between paragraphs.\",\n      \"prerequisites\": [5, 6, 7, 8, 9]\n    },\n    {\n      \"id\": 11,\n      \"description\": \"Review and format all in-text citations and references within the draft according to the required academic style guide.\",\n      \"prerequisites\": [10]\n    },\n    {\n      \"id\": 12,\n      \"description\": \"Proofread the entire Background of the Study section for clarity, academic tone, and grammatical errors.\",\n      \"prerequisites\": [11]\n    }\n  ]\n}",
+      "ms": 36815,
+      "error": null
+    },
+    {
+      "modelId": "gemma-4-26b-a4b",
+      "modelName": "gemma-4-26b-a4b-it",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemma-4-26b-a4b-it",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 180012,
+      "error": "Timed out after 180000ms waiting for a response",
+      "networkError": true
+    },
+    {
+      "modelId": "north-mini-code",
+      "modelName": "north-mini-code",
+      "provider": "Cohere (via OpenRouter)",
+      "architecture": "MoE",
+      "upstreamModelId": "cohere/north-mini-code:free",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "{\"microtasks\": [{\"id\": 1, \"description\": \"Identify research databases (e.g., PubMed, PsycINFO, Google Scholar) and set up search alerts using keywords: \\\"social media\\\", \\\"adolescents\\\", \\\"anxiety\\\", \\\"self-esteem\\\".\", \"prerequisites\": []}, {\"id\": 2, \"description\": \"Conduct an initial search for peer-reviewed articles on social media use and anxiety in teenagers using the databases set up in Task 1.\", \"prerequisites\": [1]}, {\"id\": 3, \"description\": \"Conduct an initial search for peer-reviewed articles on social media use and self-esteem in teenagers using the databases set up in Task 1.\", \"prerequisites\": [1]}, {\"id\": 4, \"description\": \"Screen titles and abstracts of the search results from Task 2 to select five relevant articles that directly address the relationship between social media use and anxiety in teenagers.\", \"prerequisites\": [2]}, {\"id\": 5, \"description\": \"Screen titles and abstracts of the search results from Task 3 to select five relevant articles that directly address the relationship between social media use and self-esteem in teenagers.\", \"prerequisites\": [3]}, {\"id\": 6, \"description\": \"Extract key data (authors, year, sample size, methodology, main findings) from the five selected anxiety articles into a structured spreadsheet.\", \"prerequisites\": [4]}, {\"id\": 7, \"description\": \"Extract key data (authors, year, sample size, methodology, main findings) from the five selected self-esteem articles into a structured spreadsheet.\", \"prerequisites\": [5]}, {\"id\": 8, \"description\": \"Write a concise literature review paragraph summarizing the evidence linking excessive social media use to increased anxiety among teenagers, based on the extracted data from Task 6.\", \"prerequisites\": [6]}, {\"id\": 9, \"description\": \"Write a concise literature review paragraph summarizing the evidence linking excessive social media use to lower self-esteem among teenagers, based on the extracted data from Task 7.\", \"prerequisites\": [7]}, {\"id\": 10, \"description\": \"Draft an introductory paragraph for the Background section that contextualizes the prevalence of social media use among teenagers and introduces the problem of anxiety and self-esteem impacts, incorporating the findings from Tasks 8 and 9.\", \"prerequisites\": [8, 9]}, {\"id\": 11, \"description\": \"Identify gaps in the existing research (e.g., longitudinal studies, causal mechanisms) and write a brief statement outlining the study’s significance and research question.\", \"prerequisites\": [10]}, {\"id\": 12, \"description\": \"Revise and integrate the paragraphs from Tasks 8, 9, 10, and 11 into a cohesive Background of the Study section, ensuring logical flow and proper citation format.\", \"prerequisites\": [8, 9, 10, 11]}]}",
+      "ms": 21199,
+      "error": null
+    },
+    {
+      "modelId": "gemini-2-5-flash",
+      "modelName": "gemini-2.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-2.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "```json\n{\n  \"microtasks\": [\n    {\n      \"id\": 1,\n      \"description\": \"Understand the purpose and scope of the 'Background of the Study' section for a research paper.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 2,\n      \"description\": \"Identify key terms for literature search related to social media, teenagers, anxiety, self-esteem, and excessive use.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 3,\n      \"description\": \"Conduct a preliminary literature search on the prevalence and general patterns of social media use among teenagers.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 4,\n      \"description\": \"Conduct a preliminary literature search on the general impact of social media on teenagers' well-being.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 5,\n      \"description\": \"Conduct a preliminary literature search specifically on the link between social media use and anxiety in teenagers.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 6,\n      \"description\": \"Conduct a preliminary literature search specifically on the link between social media use and self-esteem in teenagers.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 7,\n      \"description\": \"Conduct a preliminary literature search for definitions or conceptualizations of 'excessive social media use' in the context of teenagers.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 8,\n      \"description\": \"Create a high-level outline for the 'Background of the Study' section, including main topics and their logical flow.\",\n      \"prerequisites\": [\n        1\n      ]\n    },\n    {\n      \"id\": 9,\n      \"description\": \"Draft an opening paragraph introducing social media and its widespread adoption among teenagers.\",\n      \"prerequisites\": [\n        3\n      ]\n    },\n    {\n      \"id\": 10,\n      \"description\": \"Draft a paragraph describing the general context of social media use among teenagers, including common platforms and usage patterns.\",\n      \"prerequisites\": [\n        3\n      ]\n    },\n    {\n      \"id\": 11,\n      \"description\": \"Draft a paragraph defining or contextualizing 'excessive social media use' based on literature.\",\n      \"prerequisites\": [\n        7\n      ]\n    },\n    {\n      \"id\": 12,\n      \"description\": \"Draft a paragraph introducing the emerging concerns about social media's potential negative impacts on adolescent mental health.\",\n      \"prerequisites\": [\n        4\n      ]\n    },\n    {\n      \"id\": 13,\n      \"description\": \"Draft a paragraph specifically introducing anxiety as a concern related to social media use among teenagers, integrating initial findings.\",\n      \"prerequisites\": [\n        5,\n        12\n      ]\n    },\n    {\n      \"id\": 14,\n      \"description\": \"Draft a paragraph specifically introducing lower self-esteem as a concern related to social media use among teenagers, integrating initial findings.\",\n      \"prerequisites\": [\n        6,\n        12\n      ]\n    },\n    {\n      \"id\": 15,\n      \"description\": \"Draft a paragraph synthesizing the existing literature on social media and anxiety, highlighting key findings and unresolved questions.\",\n      \"prerequisites\": [\n        13\n      ]\n    },\n    {\n      \"id\": 16,\n      \"description\": \"Draft a paragraph synthesizing the existing literature on social media and self-esteem, highlighting key findings and unresolved questions.\",\n      \"prerequisites\": [\n        14\n      ]\n    },\n    {\n      \"id\": 17,\n      \"description\": \"Draft a paragraph that connects the synthesized literature to the specific argument of the paper (excessive use, anxiety, self-esteem), setting up the need for the current study.\",\n      \"prerequisites\": [\n        11,\n        15,\n        16\n      ]\n    },\n    {\n      \"id\": 18,\n      \"description\": \"Review the entire 'Background of the Study' section for overall coherence, logical flow, and clarity.\",\n      \"prerequisites\": [\n        9,\n        10,\n        17\n      ]\n    },\n    {\n      \"id\": 19,\n      \"description\": \"Check that all claims are supported by evidence and properly cited.\",\n      \"prerequisites\": [\n        18\n      ]\n    },\n    {\n      \"id\": 20,\n      \"description\": \"Proofread the section for grammar, spelling, punctuation, and formatting errors.\",\n      \"prerequisites\": [\n        19\n      ]\n    }\n  ]\n}\n```",
+      "ms": 17349,
+      "error": null
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P1",
+    "run": 2,
+    "attempt": 0,
+    "runner": "headless-node"
+  }
+}

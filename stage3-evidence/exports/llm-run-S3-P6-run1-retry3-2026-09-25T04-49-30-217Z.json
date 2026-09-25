@@ -1,0 +1,33 @@
+{
+  "runLabel": "S3-P6-run1-retry3",
+  "timestamp": "2026-09-25T04:49:30.217Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I need to write the related literature section of our research paper on the effects of social media use on teenagers. I do not know where to start. Create microtasks that would help me write this section of the paper.",
+  "responses": [
+    {
+      "modelId": "north-mini-code",
+      "modelName": "north-mini-code",
+      "provider": "Cohere (via OpenRouter)",
+      "architecture": "MoE",
+      "upstreamModelId": "cohere/north-mini-code:free",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "{\"microtasks\": [{\"id\": 1, \"description\": \"Define research scope and objectives for literature review.\", \"prerequisites\": []}, {\"id\": 2, \"description\": \"Conduct database searches for relevant studies on social media use and teenage outcomes.\", \"prerequisites\": [1]}, {\"id\": 3, \"description\": \"Export search results to reference manager.\", \"prerequisites\": [2]}, {\"id\": 4, \"description\": \"Read and annotate Source A (seminal article).\", \"prerequisites\": [3]}, {\"id\": 5, \"description\": \"Summarize key findings of Source A in a note.\", \"prerequisites\": [4]}, {\"id\": 6, \"description\": \"Read and annotate Source B (recent meta-analysis).\", \"prerequisites\": [3]}, {\"id\": 7, \"description\": \"Summarize key findings of Source B in a note.\", \"prerequisites\": [6]}, {\"id\": 8, \"description\": \"Read and annotate Source C (qualitative study).\", \"prerequisites\": [3]}, {\"id\": 9, \"description\": \"Summarize key findings of Source C in a note.\", \"prerequisites\": [8]}, {\"id\": 10, \"description\": \"Organize sources into thematic categories (mental health, social development, cyberbullying, academic performance).\", \"prerequisites\": [5,7,9]}, {\"id\": 11, \"description\": \"Write introductory paragraph for literature review, outlining scope and themes.\", \"prerequisites\": [10]}, {\"id\": 12, \"description\": \"Write paragraph for Theme 1: Mental health impacts.\", \"prerequisites\": [11,10]}, {\"id\": 13, \"description\": \"Write paragraph for Theme 2: Social development and peer relationships.\", \"prerequisites\": [11,10]}, {\"id\": 14, \"description\": \"Write paragraph for Theme 3: Cyberbullying and online harassment.\", \"prerequisites\": [11,10]}, {\"id\": 15, \"description\": \"Write paragraph for Theme 4: Academic performance effects.\", \"prerequisites\": [11,10]}, {\"id\": 16, \"description\": \"Write concluding paragraph synthesizing findings and noting gaps.\", \"prerequisites\": [12,13,14,15]}, {\"id\": 17, \"description\": \"Insert in-text citations and ensure formatting consistency.\", \"prerequisites\": [16]}, {\"id\": 18, \"description\": \"Proofread and edit literature review for coherence and citation accuracy.\", \"prerequisites\": [17]}]}",
+      "ms": 12869,
+      "error": null
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P6",
+    "run": 1,
+    "attempt": 3,
+    "runner": "headless-node"
+  }
+}

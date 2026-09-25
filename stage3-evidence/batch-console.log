@@ -1,0 +1,220 @@
+2026-09-25T03:44:23.346Z sending S3-P1-run1 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 48/50 requests left today.
+2026-09-25T03:45:24.245Z S3-P1-run1: 4/4 OK · OpenRouter free quota left before send: 48/50
+2026-09-25T03:45:44.268Z sending S3-P1-run2 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 47/50 requests left today.
+2026-09-25T03:48:44.854Z S3-P1-run2: 3/4 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response) · OpenRouter free quota left before send: 47/50
+2026-09-25T03:48:44.855Z S3-P1-run2: API failure for gemma-4-26b-a4b — waiting 60s, then re-sending those models
+2026-09-25T03:49:44.923Z sending S3-P1-run2-retry to gemma-4-26b-a4b
+2026-09-25T03:52:12.951Z S3-P1-run2-retry: 1/1 OK
+2026-09-25T03:52:32.965Z sending S3-P1-run3 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 46/50 requests left today.
+2026-09-25T03:53:30.403Z S3-P1-run3: 4/4 OK · OpenRouter free quota left before send: 46/50
+2026-09-25T03:53:50.418Z sending S3-P2-run1 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 45/50 requests left today.
+2026-09-25T03:55:45.906Z S3-P2-run1: 4/4 OK · OpenRouter free quota left before send: 45/50
+2026-09-25T03:56:05.923Z sending S3-P2-run2 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 44/50 requests left today.
+2026-09-25T03:57:09.348Z S3-P2-run2: 4/4 OK · OpenRouter free quota left before send: 44/50
+2026-09-25T03:57:29.368Z sending S3-P2-run3 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 43/50 requests left today.
+2026-09-25T03:58:34.769Z S3-P2-run3: 4/4 OK · OpenRouter free quota left before send: 43/50
+2026-09-25T03:58:54.787Z sending S3-P3-run1 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 42/50 requests left today.
+2026-09-25T04:00:44.389Z S3-P3-run1: 4/4 OK · OpenRouter free quota left before send: 42/50
+2026-09-25T04:01:04.408Z sending S3-P3-run2 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 41/50 requests left today.
+2026-09-25T04:03:59.945Z S3-P3-run2: 3/4 OK — failed: gemini-2-5-flash (HTTP 503: [{
+  "error": {
+    "code": 503,
+    "message": "T) · OpenRouter free quota left before send: 41/50
+2026-09-25T04:03:59.947Z S3-P3-run2: API failure for gemini-2-5-flash — waiting 60s, then re-sending those models
+2026-09-25T04:05:00.020Z sending S3-P3-run2-retry to gemini-2-5-flash
+2026-09-25T04:05:27.284Z S3-P3-run2-retry: 1/1 OK
+2026-09-25T04:05:47.301Z sending S3-P3-run3 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 40/50 requests left today.
+2026-09-25T04:06:35.212Z S3-P3-run3: 3/4 OK — failed: gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y) · OpenRouter free quota left before send: 40/50
+2026-09-25T04:06:35.213Z S3-P3-run3: API failure for gemini-2-5-flash — waiting 60s, then re-sending those models
+2026-09-25T04:07:35.275Z sending S3-P3-run3-retry to gemini-2-5-flash
+2026-09-25T04:07:42.478Z S3-P3-run3-retry: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y)
+2026-09-25T04:07:42.479Z S3-P3-run3: API failure for gemini-2-5-flash — waiting 120s, then re-sending those models
+2026-09-25T04:09:42.660Z sending S3-P3-run3-retry2 to gemini-2-5-flash
+2026-09-25T04:10:00.103Z S3-P3-run3-retry2: 1/1 OK
+2026-09-25T04:10:20.140Z sending S3-P4-run1 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 39/50 requests left today.
+2026-09-25T04:11:04.293Z S3-P4-run1: 3/4 OK — failed: gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y) · OpenRouter free quota left before send: 39/50
+2026-09-25T04:11:04.293Z S3-P4-run1: API failure for gemini-2-5-flash — waiting 60s, then re-sending those models
+2026-09-25T04:12:04.415Z sending S3-P4-run1-retry to gemini-2-5-flash
+2026-09-25T04:12:05.043Z S3-P4-run1-retry: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y)
+2026-09-25T04:12:05.044Z S3-P4-run1: API failure for gemini-2-5-flash — waiting 120s, then re-sending those models
+2026-09-25T04:14:05.193Z sending S3-P4-run1-retry2 to gemini-2-5-flash
+2026-09-25T04:14:05.776Z S3-P4-run1-retry2: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y)
+2026-09-25T04:14:05.777Z S3-P4-run1: UNRESOLVED after 2 re-sends — gemini-2-5-flash
+2026-09-25T04:14:25.791Z sending S3-P4-run2 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code, gemini-2-5-flash
+OpenRouter free-model quota: 38/50 requests left today.
+2026-09-25T04:17:26.212Z S3-P4-run2: 2/4 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response); gemini-2-5-flash (HTTP 429: [{
+  "error": {
+    "code": 429,
+    "message": "Y) · OpenRouter free quota left before send: 38/50
+2026-09-25T04:17:26.214Z S3-P4-run2: API failure for gemma-4-26b-a4b, gemini-2-5-flash — waiting 60s, then re-sending those models
+
+Stopping after the current send (Ctrl-C again to abort)…
+2026-09-25T04:17:33.224Z PAUSED — stopped by request. Progress is saved; run the batch again to resume.
+2026-09-25T04:17:33.226Z paused: 38 first-pass OK, 3 recovered by re-send, 3 unresolved, 76 not sent (of 120).
+{"expected":120,"firstPassOk":38,"recovered":3,"unresolved":3,"notSent":76}
+2026-09-25T04:21:12.734Z sending S3-P4-run1-retry3 to gemini-2-5-flash
+2026-09-25T04:21:13.405Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T04:21:13.405Z S3-P4-run1-retry3: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T04:21:33.428Z sending S3-P4-run2-retry to gemma-4-26b-a4b
+2026-09-25T04:22:15.571Z S3-P4-run2-retry: 1/1 OK
+OpenRouter free-model quota: 37/50 requests left today.
+2026-09-25T04:22:35.959Z sending S3-P4-run3 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 37/50 requests left today.
+2026-09-25T04:25:36.022Z S3-P4-run3: 2/3 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response) · OpenRouter free quota left before send: 37/50
+2026-09-25T04:25:56.043Z sending S3-P4-run3-retry to gemma-4-26b-a4b
+2026-09-25T04:28:41.544Z S3-P4-run3-retry: 1/1 OK
+2026-09-25T04:29:12.098Z north-mini-code: set aside for this session — Couldn't read OpenRouter's free-model quota (fetch failed). Pausing rather than sending blind.
+2026-09-25T04:29:12.098Z sending S3-P5-run1 to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:29:22.625Z S3-P5-run1: 0/2 OK — failed: gemini-3-5-flash (fetch failed); gemma-4-26b-a4b (fetch failed)
+2026-09-25T04:29:22.626Z S3-P5-run1: API failure for gemini-3-5-flash, gemma-4-26b-a4b — waiting 49s, then re-sending those models
+2026-09-25T04:30:12.195Z sending S3-P5-run1-retry to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:32:29.713Z S3-P5-run1-retry: 2/2 OK
+2026-09-25T04:32:49.744Z sending S3-P5-run2 to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:35:49.750Z S3-P5-run2: 1/2 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response)
+2026-09-25T04:36:09.774Z sending S3-P5-run2-retry to gemma-4-26b-a4b
+2026-09-25T04:37:07.289Z S3-P5-run2-retry: 1/1 OK
+2026-09-25T04:37:27.311Z sending S3-P5-run3 to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:38:25.085Z S3-P5-run3: 2/2 OK
+2026-09-25T04:38:45.107Z sending S3-P6-run1 to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:41:45.119Z S3-P6-run1: 1/2 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response)
+2026-09-25T04:42:05.137Z sending S3-P6-run1-retry to gemma-4-26b-a4b
+2026-09-25T04:45:05.151Z S3-P6-run1-retry: 0/1 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response)
+2026-09-25T04:45:25.174Z sending S3-P6-run1-retry2 to gemma-4-26b-a4b
+2026-09-25T04:46:10.287Z S3-P6-run1-retry2: 1/1 OK
+2026-09-25T04:46:30.304Z sending S3-P6-run2 to gemini-3-5-flash, gemma-4-26b-a4b
+2026-09-25T04:47:11.059Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T04:47:11.059Z S3-P6-run2: 1/2 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+
+Stopping after the current send (Ctrl-C again to abort)…
+2026-09-25T04:47:30.084Z PAUSED — stopped by request. Progress is saved; run the batch again to resume.
+2026-09-25T04:47:30.086Z paused: 45 first-pass OK, 9 recovered by re-send, 14 waiting on quota, 0 to re-send, 0 unresolved, 52 not sent (of 120).
+{"expected":120,"firstPassOk":45,"recovered":9,"unresolved":0,"waiting":14,"notSent":52,"retryable":0}
+2026-09-25T04:47:34.617Z sending S3-P4-run1-retry4 to gemini-2-5-flash
+2026-09-25T04:47:35.173Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T04:47:35.173Z S3-P4-run1-retry4: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+OpenRouter free-model quota: 36/50 requests left today.
+2026-09-25T04:47:55.783Z sending S3-P5-run1-retry2 to north-mini-code
+OpenRouter free-model quota: 36/50 requests left today.
+2026-09-25T04:48:04.272Z S3-P5-run1-retry2: 1/1 OK · OpenRouter free quota left before send: 36/50
+OpenRouter free-model quota: 36/50 requests left today.
+2026-09-25T04:48:24.487Z sending S3-P5-run2-retry2 to north-mini-code
+OpenRouter free-model quota: 36/50 requests left today.
+2026-09-25T04:48:42.458Z S3-P5-run2-retry2: 1/1 OK · OpenRouter free quota left before send: 36/50
+OpenRouter free-model quota: 35/50 requests left today.
+2026-09-25T04:49:02.984Z sending S3-P5-run3-retry to north-mini-code
+OpenRouter free-model quota: 35/50 requests left today.
+2026-09-25T04:49:09.915Z S3-P5-run3-retry: 1/1 OK · OpenRouter free quota left before send: 35/50
+OpenRouter free-model quota: 34/50 requests left today.
+2026-09-25T04:49:30.153Z sending S3-P6-run1-retry3 to north-mini-code
+OpenRouter free-model quota: 34/50 requests left today.
+2026-09-25T04:49:43.087Z S3-P6-run1-retry3: 1/1 OK · OpenRouter free quota left before send: 34/50
+OpenRouter free-model quota: 33/50 requests left today.
+2026-09-25T04:50:03.490Z sending S3-P6-run2-retry to gemini-3-5-flash, north-mini-code
+OpenRouter free-model quota: 33/50 requests left today.
+2026-09-25T04:50:25.822Z S3-P6-run2-retry: 2/2 OK · OpenRouter free quota left before send: 33/50
+OpenRouter free-model quota: 32/50 requests left today.
+2026-09-25T04:50:46.106Z sending S3-P6-run3 to gemini-3-5-flash, gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 32/50 requests left today.
+2026-09-25T04:51:27.575Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T04:51:27.575Z S3-P6-run3: 2/3 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur) · OpenRouter free quota left before send: 32/50
+OpenRouter free-model quota: 30/50 requests left today.
+2026-09-25T04:51:48.208Z sending S3-P7-run1 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 30/50 requests left today.
+2026-09-25T04:52:31.199Z S3-P7-run1: 2/2 OK · OpenRouter free quota left before send: 30/50
+OpenRouter free-model quota: 29/50 requests left today.
+2026-09-25T04:52:51.804Z sending S3-P7-run2 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 29/50 requests left today.
+2026-09-25T04:53:34.503Z S3-P7-run2: 2/2 OK · OpenRouter free quota left before send: 29/50
+OpenRouter free-model quota: 28/50 requests left today.
+2026-09-25T04:53:55.071Z sending S3-P7-run3 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 28/50 requests left today.
+2026-09-25T04:54:41.724Z S3-P7-run3: 2/2 OK · OpenRouter free quota left before send: 28/50
+OpenRouter free-model quota: 27/50 requests left today.
+2026-09-25T04:55:02.189Z sending S3-P8-run1 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 27/50 requests left today.
+2026-09-25T04:56:04.322Z S3-P8-run1: 2/2 OK · OpenRouter free quota left before send: 27/50
+OpenRouter free-model quota: 26/50 requests left today.
+2026-09-25T04:56:24.893Z sending S3-P8-run2 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 26/50 requests left today.
+2026-09-25T04:57:28.374Z S3-P8-run2: 2/2 OK · OpenRouter free quota left before send: 26/50
+OpenRouter free-model quota: 25/50 requests left today.
+2026-09-25T04:57:49.063Z sending S3-P8-run3 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 25/50 requests left today.
+2026-09-25T04:58:55.251Z S3-P8-run3: 2/2 OK · OpenRouter free quota left before send: 25/50
+2026-09-25T04:59:49.178Z north-mini-code: set aside for this session — Couldn't read OpenRouter's free-model quota (fetch failed). Pausing rather than sending blind.
+2026-09-25T04:59:49.181Z sending S3-P9-run1 to gemma-4-26b-a4b
+2026-09-25T04:59:59.290Z S3-P9-run1: 0/1 OK — failed: gemma-4-26b-a4b (fetch failed)
+2026-09-25T04:59:59.291Z S3-P9-run1: API failure for gemma-4-26b-a4b — waiting 50s, then re-sending those models
+2026-09-25T05:00:49.231Z sending S3-P9-run1-retry to gemma-4-26b-a4b
+2026-09-25T05:01:50.869Z S3-P9-run1-retry: 1/1 OK
+2026-09-25T05:02:10.886Z sending S3-P9-run2 to gemma-4-26b-a4b
+2026-09-25T05:03:05.869Z S3-P9-run2: 1/1 OK
+2026-09-25T05:03:25.889Z sending S3-P9-run3 to gemma-4-26b-a4b
+2026-09-25T05:04:21.313Z S3-P9-run3: 1/1 OK
+2026-09-25T05:04:41.334Z sending S3-P10-run1 to gemma-4-26b-a4b
+
+Stopping after the current send (Ctrl-C again to abort)…
+2026-09-25T05:07:41.347Z S3-P10-run1: 0/1 OK — failed: gemma-4-26b-a4b (Timed out after 180000ms waiting for a response)
+2026-09-25T05:07:41.350Z PAUSED — stopped by request. Progress is saved; run the batch again to resume.
+2026-09-25T05:07:41.351Z paused: 61 first-pass OK, 16 recovered by re-send, 34 waiting on quota, 1 to re-send, 0 unresolved, 8 not sent (of 120).
+{"expected":120,"firstPassOk":61,"recovered":16,"unresolved":0,"waiting":34,"notSent":8,"retryable":1}
+2026-09-25T05:08:30.155Z sending S3-P4-run1-retry5 to gemini-2-5-flash
+2026-09-25T05:08:30.742Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T05:08:30.742Z S3-P4-run1-retry5: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T05:08:50.762Z sending S3-P6-run3-retry to gemini-3-5-flash
+2026-09-25T05:09:05.837Z S3-P6-run3-retry: 1/1 OK
+2026-09-25T05:09:25.856Z sending S3-P7-run1-retry to gemini-3-5-flash
+2026-09-25T05:09:26.499Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T05:09:26.499Z S3-P7-run1-retry: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+OpenRouter free-model quota: 24/50 requests left today.
+2026-09-25T05:09:46.950Z sending S3-P9-run1-retry2 to north-mini-code
+OpenRouter free-model quota: 24/50 requests left today.
+2026-09-25T05:10:03.872Z S3-P9-run1-retry2: 1/1 OK · OpenRouter free quota left before send: 24/50
+OpenRouter free-model quota: 24/50 requests left today.
+2026-09-25T05:10:24.089Z sending S3-P9-run2-retry to north-mini-code
+OpenRouter free-model quota: 24/50 requests left today.
+2026-09-25T05:10:30.850Z S3-P9-run2-retry: 1/1 OK · OpenRouter free quota left before send: 24/50
+OpenRouter free-model quota: 23/50 requests left today.
+2026-09-25T05:10:51.094Z sending S3-P9-run3-retry to north-mini-code
+OpenRouter free-model quota: 23/50 requests left today.
+2026-09-25T05:10:59.328Z S3-P9-run3-retry: 1/1 OK · OpenRouter free quota left before send: 23/50
+OpenRouter free-model quota: 22/50 requests left today.
+2026-09-25T05:11:19.610Z sending S3-P10-run1-retry to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 22/50 requests left today.
+2026-09-25T05:12:10.909Z S3-P10-run1-retry: 2/2 OK · OpenRouter free quota left before send: 22/50
+OpenRouter free-model quota: 20/50 requests left today.
+2026-09-25T05:12:31.341Z sending S3-P10-run2 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 20/50 requests left today.
+2026-09-25T05:13:22.592Z S3-P10-run2: 2/2 OK · OpenRouter free quota left before send: 20/50
+OpenRouter free-model quota: 19/50 requests left today.
+2026-09-25T05:13:43.026Z sending S3-P10-run3 to gemma-4-26b-a4b, north-mini-code
+OpenRouter free-model quota: 19/50 requests left today.
+2026-09-25T05:14:35.687Z S3-P10-run3: 2/2 OK · OpenRouter free quota left before send: 19/50
+2026-09-25T05:14:35.691Z paused: 65 first-pass OK, 22 recovered by re-send, 33 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":22,"unresolved":0,"waiting":33,"notSent":0,"retryable":0}
+2026-09-25T05:14:46Z [driver] current pass ended; waiting for Google's daily quota reset (~07:00 UTC)

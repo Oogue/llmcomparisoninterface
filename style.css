@@ -401,3 +401,62 @@ button.secondary:hover:not(:disabled) {
   color: var(--text-dim, #8b93a7);
   font-size: 12px;
 }
+
+/* ============================================================================
+   STAGE 3 BATCH (added 2026-09-25) — collapsible panel above the grid, styled
+   like the session history panel. Logic lives in batch.js.
+   ========================================================================== */
+.batch {
+  margin-bottom: 20px;
+}
+
+.batch details {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.batch summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.batch summary:hover {
+  color: var(--text);
+}
+
+.batch .hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 10px 0 6px;
+}
+
+.batch label.inline {
+  font-size: 13px;
+  color: var(--text-muted);
+  align-self: center;
+}
+
+.batch input[type="number"] {
+  width: 70px;
+  padding: 6px 8px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.batch-log {
+  margin: 10px 0 4px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: pre-wrap;
+}

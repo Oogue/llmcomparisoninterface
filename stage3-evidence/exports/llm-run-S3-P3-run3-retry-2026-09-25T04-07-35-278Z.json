@@ -1,0 +1,34 @@
+{
+  "runLabel": "S3-P3-run3-retry",
+  "timestamp": "2026-09-25T04:07:35.278Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I need to write the Significance of the Study section for a research paper on sleep deprivation and academic performance among undergraduate students. The section needs to address significance to the academic community, to university administrators, and to student health services. Give me the most granular breakdown of microtasks possible for writing this section.",
+  "responses": [
+    {
+      "modelId": "gemini-2-5-flash",
+      "modelName": "gemini-2.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-2.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 7196,
+      "error": "HTTP 429: [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-",
+      "networkError": false
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P3",
+    "run": 3,
+    "attempt": 1,
+    "runner": "headless-node"
+  }
+}
