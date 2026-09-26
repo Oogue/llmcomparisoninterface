@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-09-26T02:18:57.321Z",
+  "raters": [
+    "allen",
+    "nian",
+    "lui",
+    "emman"
+  ],
+  "seedA": 20260926,
+  "seedB": 20260927,
+  "order": "shared by all raters",
+  "sheetA_rows": 120,
+  "sheetB_rows": 40,
+  "source_exports_dir": "stage3-evidence/exports",
+  "rubric": "Manuscript Appendix D.1 (LLM Evaluation Rubric), pp. 103-105 of the PDF; extracted programmatically.",
+  "note": "keys/ holds the model mapping — keep away from raters until all sheets are in."
+}

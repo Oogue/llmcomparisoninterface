@@ -1,0 +1,66 @@
+{
+  "source": "Manuscript Appendix D.1 (LLM Evaluation Rubric), pp. 103-105 of the PDF; extracted programmatically.",
+  "scale": "1-5, integers",
+  "criteria": [
+    {
+      "key": "task_decomposition",
+      "name": "Task Decomposition Quality",
+      "per": "individual response",
+      "descriptors": {
+        "5": "Tasks are clearly worded, appropriately granular, and fully complete; every necessary component of the deliverable is represented with no redundancy.",
+        "4": "Tasks are mostly clear and granular with minor gaps or slight over-bundling of steps.",
+        "3": "Tasks are adequately broken down but noticeably uneven in granularity or missing one or two components.",
+        "2": "Tasks are vague or inconsistently sized; significant components are missing or conflated.",
+        "1": "Output is not decomposed into meaningful tasks; items are too broad, too granular, or incomplete to be usable."
+      }
+    },
+    {
+      "key": "sequencing_logic",
+      "name": "Sequencing Logic",
+      "per": "individual response",
+      "descriptors": {
+        "5": "Prerequisite relationships are fully and correctly identified; foundational tasks precede their dependents, and independent sub-goals are represented as separate, non-blocking strands rather than flattened into a single chain.",
+        "4": "Prerequisites are mostly correct, with one or two minor errors or missed opportunities to represent independent strands separately.",
+        "3": "Prerequisites are partially correct but contain noticeable errors, or independent sub-goals are unnecessarily flattened into a single chain, requiring student adjustment.",
+        "2": "Prerequisites are largely incorrect or missing; dependent tasks are not linked to what they depend on, such that following the structure would create friction.",
+        "1": "No discernible prerequisite structure; tasks show no handling of dependencies."
+      }
+    },
+    {
+      "key": "actionability",
+      "name": "Actionability",
+      "per": "individual response",
+      "descriptors": {
+        "5": "All tasks are immediately executable as written; each begins with a clear action verb and specifies exactly what the student must produce or accomplish.",
+        "4": "Most tasks are immediately executable; one or two require minor reinterpretation before the student can begin.",
+        "3": "Some tasks are actionable but several require the student to plan sub-steps before starting.",
+        "2": "Most tasks are stated as goals or topics rather than actions; the student must significantly re-plan before executing.",
+        "1": "Tasks are not actionable; output reads as an outline or topic list rather than a set of executable steps."
+      }
+    },
+    {
+      "key": "cognitive_load",
+      "name": "Cognitive Load Reduction Potential",
+      "per": "individual response",
+      "descriptors": {
+        "5": "Output completely removes ambiguity about what to do next; the student faces no residual planning decisions before beginning each task.",
+        "4": "Output substantially reduces ambiguity; minimal residual decision-making required before starting.",
+        "3": "Output reduces some ambiguity but leaves noticeable open questions the student must resolve independently.",
+        "2": "Output provides little decision support; the student must still perform most of the planning work themselves.",
+        "1": "Output adds confusion or introduces new ambiguity; provides no meaningful reduction in planning burden."
+      }
+    },
+    {
+      "key": "consistency",
+      "name": "Consistency",
+      "per": "group of 3 runs (rated once per prompt x model)",
+      "descriptors": {
+        "5": "Identical prompts produce structurally and substantively equivalent outputs across all runs; no meaningful variation in format, granularity, or coverage.",
+        "4": "Outputs are largely consistent with minor variation in phrasing or ordering that does not affect usability.",
+        "3": "Outputs are moderately consistent; some variation in granularity or coverage across runs that would affect the student experience.",
+        "2": "Outputs vary noticeably across runs; structure, granularity, or coverage differs enough to produce inconsistent student experiences.",
+        "1": "Outputs are highly inconsistent across runs; the model cannot be relied upon to produce comparable results from identical inputs."
+      }
+    }
+  ]
+}

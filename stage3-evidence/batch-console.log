@@ -218,3 +218,175 @@ OpenRouter free-model quota: 19/50 requests left today.
 2026-09-25T05:14:35.691Z paused: 65 first-pass OK, 22 recovered by re-send, 33 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
 {"expected":120,"firstPassOk":65,"recovered":22,"unresolved":0,"waiting":33,"notSent":0,"retryable":0}
 2026-09-25T05:14:46Z [driver] current pass ended; waiting for Google's daily quota reset (~07:00 UTC)
+2026-09-25T13:04:37.001Z sending S3-P4-run1-retry6 to gemini-2-5-flash
+2026-09-25T13:04:59.653Z S3-P4-run1-retry6: 1/1 OK
+2026-09-25T13:05:19.675Z sending S3-P4-run2-retry2 to gemini-2-5-flash
+2026-09-25T13:06:17.210Z S3-P4-run2-retry2: 1/1 OK
+2026-09-25T13:06:37.229Z sending S3-P4-run3-retry2 to gemini-2-5-flash
+2026-09-25T13:06:56.343Z S3-P4-run3-retry2: 1/1 OK
+2026-09-25T13:07:16.366Z sending S3-P5-run1-retry3 to gemini-2-5-flash
+2026-09-25T13:07:28.601Z S3-P5-run1-retry3: 1/1 OK
+2026-09-25T13:07:48.622Z sending S3-P5-run2-retry3 to gemini-2-5-flash
+2026-09-25T13:08:00.051Z S3-P5-run2-retry3: 1/1 OK
+2026-09-25T13:08:20.068Z sending S3-P5-run3-retry2 to gemini-2-5-flash
+2026-09-25T13:08:31.346Z S3-P5-run3-retry2: 1/1 OK
+2026-09-25T13:08:51.367Z sending S3-P6-run1-retry4 to gemini-2-5-flash
+2026-09-25T13:09:07.605Z S3-P6-run1-retry4: 1/1 OK
+2026-09-25T13:09:27.629Z sending S3-P6-run2-retry2 to gemini-2-5-flash
+2026-09-25T13:09:47.965Z S3-P6-run2-retry2: 1/1 OK
+2026-09-25T13:10:07.984Z sending S3-P6-run3-retry2 to gemini-2-5-flash
+2026-09-25T13:10:24.069Z S3-P6-run3-retry2: 1/1 OK
+2026-09-25T13:10:44.090Z sending S3-P7-run1-retry2 to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T13:12:52.192Z S3-P7-run1-retry2: 1/2 OK — failed: gemini-3-5-flash (HTTP 503: [{ "error": { "code": 503, "message": "This model is current)
+2026-09-25T13:13:12.213Z sending S3-P7-run1-retry3 to gemini-3-5-flash
+2026-09-25T13:13:31.720Z S3-P7-run1-retry3: 1/1 OK
+2026-09-25T13:13:51.744Z sending S3-P7-run2-retry to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T13:14:31.422Z S3-P7-run2-retry: 1/2 OK — failed: gemini-3-5-flash (HTTP 503: [{ "error": { "code": 503, "message": "This model is current)
+2026-09-25T13:14:31.423Z S3-P7-run2: API failure for gemini-3-5-flash — waiting 20s, then re-sending those models
+2026-09-25T13:14:51.769Z sending S3-P7-run2-retry2 to gemini-3-5-flash
+2026-09-25T13:18:05.468Z S3-P7-run2-retry2: 0/1 OK — failed: gemini-3-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T13:18:25.506Z sending S3-P7-run2-retry3 to gemini-3-5-flash
+2026-09-25T13:18:48.963Z S3-P7-run2-retry3: 1/1 OK
+2026-09-25T13:19:08.999Z sending S3-P7-run3-retry to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T13:19:29.310Z S3-P7-run3-retry: 2/2 OK
+2026-09-25T13:19:49.294Z sending S3-P8-run1-retry to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T13:24:08.861Z S3-P8-run1-retry: 1/2 OK — failed: gemini-3-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T13:24:28.857Z sending S3-P8-run1-retry2 to gemini-3-5-flash
+2026-09-25T13:25:02.878Z S3-P8-run1-retry2: 0/1 OK — failed: gemini-3-5-flash (HTTP 503: [{ "error": { "code": 503, "message": "This model is current)
+2026-09-25T13:25:02.881Z S3-P8-run1: API failure for gemini-3-5-flash — waiting 86s, then re-sending those models
+2026-09-25T13:26:28.950Z sending S3-P8-run1-retry3 to gemini-3-5-flash
+2026-09-25T13:37:28.606Z S3-P8-run1-retry3: 0/1 OK — failed: gemini-3-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T13:37:28.622Z S3-P8-run1: UNRESOLVED after 2 re-sends — gemini-3-5-flash
+2026-09-25T13:37:48.445Z sending S3-P8-run2-retry to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T13:37:58.968Z S3-P8-run2-retry: 0/2 OK — failed: gemini-3-5-flash (fetch failed); gemini-2-5-flash (fetch failed)
+2026-09-25T13:37:58.968Z S3-P8-run2: API failure for gemini-3-5-flash, gemini-2-5-flash — waiting 49s, then re-sending those models
+2026-09-25T14:32:09.406Z sending S3-P8-run2-retry2 to gemini-3-5-flash, gemini-2-5-flash
+2026-09-25T15:25:42.408Z S3-P8-run2-retry2: 0/2 OK — failed: gemini-3-5-flash (Timed out after 180000ms waiting for a response); gemini-2-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T15:26:02.440Z sending S3-P8-run2-retry3 to gemini-3-5-flash, gemini-2-5-flash
+
+Stopping after the current send (Ctrl-C again to abort)…
+2026-09-25T15:26:19.482Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T15:26:19.482Z S3-P8-run2-retry3: 1/2 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T15:26:19.483Z PAUSED — stopped by request. Progress is saved; run the batch again to resume.
+2026-09-25T15:26:19.484Z paused: 65 first-pass OK, 39 recovered by re-send, 15 waiting on quota, 0 to re-send, 1 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":39,"unresolved":1,"waiting":15,"notSent":0,"retryable":0}
+2026-09-25T15:26:22.817Z sending S3-P8-run1-retry4 to gemini-3-5-flash
+2026-09-25T15:26:23.376Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T15:26:23.376Z S3-P8-run1-retry4: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T15:28:21.255Z sending S3-P8-run3-retry to gemini-2-5-flash
+2026-09-25T15:28:37.956Z S3-P8-run3-retry: 1/1 OK
+2026-09-25T15:46:51.821Z sending S3-P9-run1-retry3 to gemini-2-5-flash
+2026-09-25T16:02:27.556Z S3-P9-run1-retry3: 0/1 OK — failed: gemini-2-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T16:29:17.069Z sending S3-P9-run1-retry4 to gemini-2-5-flash
+2026-09-25T16:29:28.072Z S3-P9-run1-retry4: 1/1 OK
+2026-09-25T16:29:48.112Z sending S3-P9-run2-retry2 to gemini-2-5-flash
+2026-09-25T16:45:32.543Z S3-P9-run2-retry2: 0/1 OK — failed: gemini-2-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T17:30:11.821Z sending S3-P9-run2-retry3 to gemini-2-5-flash
+2026-09-25T17:30:12.444Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T17:30:12.444Z S3-P9-run2-retry3: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T17:30:12.446Z paused: 65 first-pass OK, 41 recovered by re-send, 14 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":41,"unresolved":0,"waiting":14,"notSent":0,"retryable":0}
+2026-09-25T17:30:19Z [driver] first pass ended; running batch with GEMINI_API_KEY_PREVIOUS
+2026-09-25T17:30:19.417Z sending S3-P8-run1-retry5 to gemini-3-5-flash
+2026-09-25T17:30:27.531Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T17:30:27.531Z S3-P8-run1-retry5: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T17:30:47.569Z sending S3-P9-run2-retry4 to gemini-2-5-flash
+2026-09-25T17:46:46.564Z S3-P9-run2-retry4: 0/1 OK — failed: gemini-2-5-flash (Timed out after 180000ms waiting for a response)
+2026-09-25T18:00:12.397Z sending S3-P9-run2-retry5 to gemini-2-5-flash
+2026-09-25T18:00:12.889Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:00:12.889Z S3-P9-run2-retry5: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:00:12.891Z paused: 65 first-pass OK, 41 recovered by re-send, 14 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":41,"unresolved":0,"waiting":14,"notSent":0,"retryable":0}
+2026-09-25T18:00:12Z [driver] previous-key pass exited 0
+2026-09-25T18:00:12Z [driver] done
+2026-09-25T18:03:54Z [driver] running batch with GEMINI_API_KEY
+2026-09-25T18:03:54.875Z sending S3-P8-run1-retry6 to gemini-3-5-flash
+2026-09-25T18:04:11.684Z S3-P8-run1-retry6: 0/1 OK — failed: gemini-3-5-flash (HTTP 503: [{ "error": { "code": 503, "message": "This model is current)
+2026-09-25T18:04:11.686Z S3-P8-run1: API failure for gemini-3-5-flash — waiting 103s, then re-sending those models
+2026-09-25T18:05:54.992Z sending S3-P8-run1-retry7 to gemini-3-5-flash
+2026-09-25T18:05:55.513Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:05:55.513Z S3-P8-run1-retry7: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:06:15.530Z sending S3-P9-run2-retry6 to gemini-2-5-flash
+2026-09-25T18:06:23.105Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:06:23.105Z S3-P9-run2-retry6: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:06:23.107Z paused: 65 first-pass OK, 41 recovered by re-send, 14 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":41,"unresolved":0,"waiting":14,"notSent":0,"retryable":0}
+2026-09-25T18:06:23Z [driver] pass with GEMINI_API_KEY exited 2
+2026-09-25T18:06:23Z [driver] running batch with GEMINI_API_KEY_PREVIOUS
+2026-09-25T18:06:23.179Z sending S3-P8-run1-retry8 to gemini-3-5-flash
+2026-09-25T18:06:23.613Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:06:23.613Z S3-P8-run1-retry8: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:06:43.635Z sending S3-P9-run2-retry7 to gemini-2-5-flash
+2026-09-25T18:06:44.208Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:06:44.208Z S3-P9-run2-retry7: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:06:44.210Z paused: 65 first-pass OK, 41 recovered by re-send, 14 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":41,"unresolved":0,"waiting":14,"notSent":0,"retryable":0}
+2026-09-25T18:06:44Z [driver] pass with GEMINI_API_KEY_PREVIOUS exited 2
+2026-09-25T18:06:44Z [driver] running batch with GEMINI_API_KEY
+2026-09-25T18:06:44.265Z sending S3-P8-run1-retry9 to gemini-3-5-flash
+2026-09-25T18:06:44.813Z gemini-3-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:06:44.813Z S3-P8-run1-retry9: 0/1 OK — failed: gemini-3-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:07:04.833Z sending S3-P9-run2-retry8 to gemini-2-5-flash
+2026-09-25T18:07:17.079Z S3-P9-run2-retry8: 1/1 OK
+2026-09-25T18:07:37.101Z sending S3-P9-run3-retry2 to gemini-2-5-flash
+2026-09-25T18:07:37.480Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-25T18:07:37.481Z S3-P9-run3-retry2: 0/1 OK — failed: gemini-2-5-flash (HTTP 429: [{ "error": { "code": 429, "message": "You exceeded your cur)
+2026-09-25T18:07:37.483Z paused: 65 first-pass OK, 42 recovered by re-send, 13 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":42,"unresolved":0,"waiting":13,"notSent":0,"retryable":0}
+2026-09-25T18:07:37Z [driver] pass with GEMINI_API_KEY exited 2
+2026-09-25T18:07:37Z [driver] done
+2026-09-26T01:24:21.826Z sending S3-P8-run1-retry10 to gemini-3-5-flash
+2026-09-26T01:24:48.250Z S3-P8-run1-retry10: 1/1 OK
+2026-09-26T01:25:08.273Z sending S3-P8-run2-retry4 to gemini-3-5-flash
+2026-09-26T01:25:25.280Z S3-P8-run2-retry4: 1/1 OK
+2026-09-26T01:25:45.301Z sending S3-P8-run3-retry2 to gemini-3-5-flash
+2026-09-26T01:26:01.928Z S3-P8-run3-retry2: 1/1 OK
+2026-09-26T01:26:21.946Z sending S3-P9-run1-retry5 to gemini-3-5-flash
+2026-09-26T01:26:40.273Z S3-P9-run1-retry5: 1/1 OK
+2026-09-26T01:27:00.295Z sending S3-P9-run2-retry9 to gemini-3-5-flash
+2026-09-26T01:27:15.553Z S3-P9-run2-retry9: 1/1 OK
+2026-09-26T01:27:35.575Z sending S3-P9-run3-retry3 to gemini-3-5-flash, gemini-2-5-flash
+2026-09-26T01:28:19.208Z S3-P9-run3-retry3: 0/2 OK — failed: gemini-3-5-flash (HTTP 503: [{ "error": { "code": 503, "message": "This model is current); gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:28:19.211Z S3-P9-run3: API failure for gemini-3-5-flash, gemini-2-5-flash — waiting 16s, then re-sending those models
+2026-09-26T01:28:39.208Z sending S3-P9-run3-retry4 to gemini-3-5-flash, gemini-2-5-flash
+2026-09-26T01:28:53.553Z S3-P9-run3-retry4: 1/2 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:28:53.554Z S3-P9-run3: API failure for gemini-2-5-flash — waiting 106s, then re-sending those models
+2026-09-26T01:30:39.320Z sending S3-P9-run3-retry5 to gemini-2-5-flash
+2026-09-26T01:30:39.470Z S3-P9-run3-retry5: 0/1 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:30:39.473Z S3-P9-run3: API failure for gemini-2-5-flash — waiting 120s, then re-sending those models
+2026-09-26T01:32:39.452Z sending S3-P9-run3-retry6 to gemini-2-5-flash
+2026-09-26T01:32:39.649Z S3-P9-run3-retry6: 0/1 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:32:39.651Z S3-P9-run3: API failure for gemini-2-5-flash — waiting 120s, then re-sending those models
+2026-09-26T01:34:39.579Z sending S3-P9-run3-retry7 to gemini-2-5-flash
+2026-09-26T01:34:39.987Z S3-P9-run3-retry7: 0/1 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:34:39.990Z S3-P9-run3: API failure for gemini-2-5-flash — waiting 120s, then re-sending those models
+2026-09-26T01:36:39.710Z sending S3-P9-run3-retry8 to gemini-2-5-flash
+2026-09-26T01:36:39.972Z S3-P9-run3-retry8: 0/1 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:36:39.973Z S3-P9-run3: UNRESOLVED after 5 re-sends — gemini-2-5-flash
+2026-09-26T01:36:59.990Z sending S3-P10-run1-retry2 to gemini-3-5-flash, gemini-2-5-flash
+
+Stopping after the current send (Ctrl-C again to abort)…
+2026-09-26T01:37:18.074Z S3-P10-run1-retry2: 1/2 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:37:18.076Z S3-P10-run1: API failure for gemini-2-5-flash — waiting 42s, then re-sending those models
+2026-09-26T01:37:18.077Z PAUSED — stopped by request. Progress is saved; run the batch again to resume.
+2026-09-26T01:37:18.077Z paused: 65 first-pass OK, 49 recovered by re-send, 4 waiting on quota, 1 to re-send, 1 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":49,"unresolved":1,"waiting":4,"notSent":0,"retryable":1}
+2026-09-26T01:37:20.814Z sending S3-P9-run3-retry9 to gemini-2-5-flash
+2026-09-26T01:37:21.113Z gemini-2-5-flash: set aside for this session — daily quota reached (HTTP 429)
+2026-09-26T01:37:21.113Z S3-P9-run3-retry9: 0/1 OK — failed: gemini-2-5-flash (HTTP 404: [{ "error": { "code": 404, "message": "This model models/gem)
+2026-09-26T01:37:41.132Z sending S3-P10-run2-retry to gemini-3-5-flash
+2026-09-26T01:37:57.537Z S3-P10-run2-retry: 1/1 OK
+2026-09-26T01:38:17.559Z sending S3-P10-run3-retry to gemini-3-5-flash
+2026-09-26T01:38:36.317Z S3-P10-run3-retry: 1/1 OK
+2026-09-26T01:38:36.322Z paused: 65 first-pass OK, 51 recovered by re-send, 4 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":51,"unresolved":0,"waiting":4,"notSent":0,"retryable":0}
+2026-09-26T02:06:24.220Z sending S3-P9-run3-retry10 to gemini-2-5-flash
+2026-09-26T02:06:50.422Z S3-P9-run3-retry10: 1/1 OK
+2026-09-26T02:07:10.445Z sending S3-P10-run1-retry3 to gemini-2-5-flash
+2026-09-26T02:07:38.412Z S3-P10-run1-retry3: 1/1 OK
+2026-09-26T02:07:58.432Z sending S3-P10-run2-retry2 to gemini-2-5-flash
+2026-09-26T02:08:10.480Z S3-P10-run2-retry2: 1/1 OK
+2026-09-26T02:08:30.498Z sending S3-P10-run3-retry2 to gemini-2-5-flash
+2026-09-26T02:09:02.268Z S3-P10-run3-retry2: 1/1 OK
+2026-09-26T02:09:02.271Z complete: 65 first-pass OK, 55 recovered by re-send, 0 waiting on quota, 0 to re-send, 0 unresolved, 0 not sent (of 120).
+{"expected":120,"firstPassOk":65,"recovered":55,"unresolved":0,"waiting":0,"notSent":0,"retryable":0}

@@ -1,0 +1,48 @@
+{
+  "runLabel": "S3-P9-run3-retry3",
+  "timestamp": "2026-09-26T01:27:35.576Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I need to write the Conclusion and Recommendations chapter for our research paper on reward-based habit formation among working professionals. The chapter should summarize key findings from our results, discuss implications for employers and HR practitioners, acknowledge study limitations, and suggest directions for future research. Break this down into microtasks. I can complete one at a time, noting which microtasks depend on others and which can be worked on independently.",
+  "responses": [
+    {
+      "modelId": "gemini-3-5-flash",
+      "modelName": "gemini-3.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-3.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 43627,
+      "error": "HTTP 503: [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n]",
+      "networkError": false
+    },
+    {
+      "modelId": "gemini-2-5-flash",
+      "modelName": "gemini-2.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-2.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 256,
+      "error": "HTTP 404: [{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.8-flash for the latest features ",
+      "networkError": false
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P9",
+    "run": 3,
+    "attempt": 3,
+    "runner": "headless-node",
+    "geminiKeyAlias": "GEMINI_API_KEY_3"
+  }
+}

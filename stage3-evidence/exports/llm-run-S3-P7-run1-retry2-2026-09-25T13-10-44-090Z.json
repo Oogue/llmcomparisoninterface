@@ -1,0 +1,47 @@
+{
+  "runLabel": "S3-P7-run1-retry2",
+  "timestamp": "2026-09-25T13:10:44.090Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I have to write something about procrastination and self-regulation in college students for my research paper but I'm not sure what part to focus on yet. Help me figure out what to do next.",
+  "responses": [
+    {
+      "modelId": "gemini-3-5-flash",
+      "modelName": "gemini-3.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-3.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 128100,
+      "error": "HTTP 503: [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n]",
+      "networkError": false
+    },
+    {
+      "modelId": "gemini-2-5-flash",
+      "modelName": "gemini-2.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-2.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "```json\n{\n  \"microtasks\": [\n    {\n      \"id\": 1,\n      \"description\": \"Define 'procrastination' in an academic context, noting key characteristics and common theoretical perspectives.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 2,\n      \"description\": \"Define 'self-regulation' in an academic context, noting key components and common theoretical perspectives.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 3,\n      \"description\": \"Conduct a preliminary search for review articles or meta-analyses on 'procrastination in college students' using academic databases.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 4,\n      \"description\": \"Conduct a preliminary search for review articles or meta-analyses on 'self-regulation in college students' using academic databases.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 5,\n      \"description\": \"Conduct a preliminary search for review articles or meta-analyses specifically linking 'procrastination and self-regulation in college students' using academic databases.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 6,\n      \"description\": \"Read the abstracts of 5-10 highly cited or relevant papers identified in task 3.\",\n      \"prerequisites\": [\n        3\n      ]\n    },\n    {\n      \"id\": 7,\n      \"description\": \"Read the abstracts of 5-10 highly cited or relevant papers identified in task 4.\",\n      \"prerequisites\": [\n        4\n      ]\n    },\n    {\n      \"id\": 8,\n      \"description\": \"Read the abstracts of 5-10 highly cited or relevant papers identified in task 5.\",\n      \"prerequisites\": [\n        5\n      ]\n    },\n    {\n      \"id\": 9,\n      \"description\": \"Summarize the key definitions and theoretical frameworks for 'procrastination' found in tasks 1, 6, and 8.\",\n      \"prerequisites\": [\n        1,\n        6,\n        8\n      ]\n    },\n    {\n      \"id\": 10,\n      \"description\": \"Summarize the key definitions and theoretical frameworks for 'self-regulation' found in tasks 2, 7, and 8.\",\n      \"prerequisites\": [\n        2,\n        7,\n        8\n      ]\n    },\n    {\n      \"id\": 11,\n      \"description\": \"Identify common themes, major findings, and prevailing theories regarding procrastination in college students from the initial literature review (tasks 6 and 8).\",\n      \"prerequisites\": [\n        6,\n        8\n      ]\n    },\n    {\n      \"id\": 12,\n      \"description\": \"Identify common themes, major findings, and prevailing theories regarding self-regulation in college students from the initial literature review (tasks 7 and 8).\",\n      \"prerequisites\": [\n        7,\n        8\n      ]\n    },\n    {\n      \"id\": 13,\n      \"description\": \"Identify common themes, major findings, and prevailing theories regarding the relationship between procrastination and self-regulation in college students from the initial literature review (task 8).\",\n      \"prerequisites\": [\n        8\n      ]\n    },\n    {\n      \"id\": 14,\n      \"description\": \"List 3-5 potential specific research angles or sub-topics within 'procrastination and self-regulation in college students' that appear interesting or underexplored based on the summaries from tasks 9-13.\",\n      \"prerequisites\": [\n        9,\n        10,\n        11,\n        12,\n        13\n      ]\n    },\n    {\n      \"id\": 15,\n      \"description\": \"Select the most promising research angle or sub-topic from the list generated in task 14, considering feasibility and personal interest.\",\n      \"prerequisites\": [\n        14\n      ]\n    },\n    {\n      \"id\": 16,\n      \"description\": \"Draft 2-3 potential research questions or a preliminary hypothesis based on the selected research angle from task 15.\",\n      \"prerequisites\": [\n        15\n      ]\n    },\n    {\n      \"id\": 17,\n      \"description\": \"Create a preliminary outline for the paper, including potential sections like Introduction, Literature Review (with sub-sections), and a brief statement of the paper's focus, based on the drafted research questions/hypothesis from task 16.\",\n      \"prerequisites\": [\n        16\n      ]\n    }\n  ]\n}\n```",
+      "ms": 11357,
+      "error": null
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P7",
+    "run": 1,
+    "attempt": 2,
+    "runner": "headless-node",
+    "geminiKeyAlias": "GEMINI_API_KEY"
+  }
+}

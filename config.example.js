@@ -6,6 +6,13 @@
 */
 const CONFIG = {
   GEMINI_API_KEY: "",
+  // Optional extra Google keys, from other accounts, for the Stage 3 batch only. Google's free tier
+  // allows ~20 requests/day per model per project, so the 120-response run needed several. Select one
+  // with: node stage3/run_headless.mjs --gemini-key=GEMINI_API_KEY_PREVIOUS  (any field name works;
+  // only the NAME is recorded in the exports, never the key). Leave blank if unused.
+  GEMINI_API_KEY_PREVIOUS: "",
+  GEMINI_API_KEY_3: "",
+  GEMINI_API_KEY_4: "",
   GROQ_API_KEY: "",
   OPENROUTER_API_KEY: "",
   // Not used by any current MODELS entry this round — both Nemotron cards

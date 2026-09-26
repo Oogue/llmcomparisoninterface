@@ -13,6 +13,7 @@
     node stage3/run_headless.mjs --live-test
         one Send to All (S3-P1 prompt) to the 4 finalists, results printed only
     node stage3/run_headless.mjs [--out=stage3-evidence] [--delay=20] [--only=S3-P1,S3-P2]
+        [--retry-limit=N]   re-sends allowed per model for non-quota failures (default 2)
         [--gemini-key=GEMINI_API_KEY_PREVIOUS]   use that config.js field for the Google models
                                                   (default GEMINI_API_KEY); its NAME is recorded in each export
         the batch: writes <out>/exports/*.json and <out>/RUN-LOG.md; resumes
@@ -92,7 +93,7 @@ let stop = false;
 process.on("SIGINT", () => { if (stop) process.exit(130); stop = true; console.log("\nStopping after the current send (Ctrl-C again to abort)…"); });
 
 const result = await runStage3Batch({
-  promptSet, io, runner: "headless-node", geminiKeyAlias, shouldStop: () => stop,
+  promptSet, io, runner: "headless-node", geminiKeyAlias, retryLimit: arg("retry-limit") ? Number(arg("retry-limit")) : null, shouldStop: () => stop,
   delayMs: (Number(arg("delay")) || 20) * 1000,
   only: arg("only") ? arg("only").split(",") : null
 });

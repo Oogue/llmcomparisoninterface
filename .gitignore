@@ -1,1 +1,4 @@
 config.js
+# Stage 3 blind-rating answer key (which model wrote what): hold back until all 8 rating sheets are in,
+# then delete this line and commit it with the results.
+stage3-evidence/rating/keys/

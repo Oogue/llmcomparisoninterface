@@ -41,7 +41,10 @@
   same script.js code, no browser).
 */
 
-const BATCH_RETRY_LIMIT = 2;               // -retry, -retry2 (for non-quota failures)
+// Re-sends allowed per model for non-quota failures (-retry, -retry2). A let, not a const,
+// so a run can be given more (--retry-limit) when failures were caused by the runner's
+// own machine (e.g. a laptop sleeping mid-send), not by the API.
+let BATCH_RETRY_LIMIT = 2;
 const BATCH_DEFAULT_DELAY_MS = 20000;      // gap between sends
 const BATCH_DEFAULT_BACKOFF_MS = [60000, 120000]; // wait before -retry, -retry2
 
@@ -66,7 +69,8 @@ function unresolvedModelIds(runs, modelIds) {
 }
 
 /*
-  isQuotaError() — a limit to wait out, not a fault to retry. Matches Google's
+  isQuotaError() — a limit to wait out (or a model this key can't serve), not a fault to
+  retry. Matches Google's
   429 "exceeded your current quota" (any quota except a per-minute one, which a
   short backoff does clear) and OpenRouter's "free-models-per-day". Older exports
   kept only 200 characters of the error, without the quotaId, so the bare
@@ -75,6 +79,10 @@ function unresolvedModelIds(runs, modelIds) {
 function isQuotaError(error) {
   const e = String(error || "");
   if (/free-models-per-day/i.test(e)) return true;
+  // Found live 2026-09-26: a newer Google account gets HTTP 404 "This model
+  // models/gemini-2.5-flash is no longer available to new users" from a key that
+  // otherwise works. Retrying can't help; another key (or account) can.
+  if (/^HTTP 404/.test(e) && /no longer available to new users/i.test(e)) return true;
   return /^HTTP 429/.test(e) && /exceeded your current quota/i.test(e) && !/PerMinute/i.test(e);
 }
 
@@ -189,12 +197,14 @@ function renderStage3Log({ promptSet, modelIds, byLabel, events, status, pauseRe
     shouldStop    () -> true to stop cleanly between sends
     runner        provenance string recorded in each export ("browser", "headless-node")
     only          optional list of prompt ids (e.g. ["S3-P1"]) for a partial run
+    retryLimit    override BATCH_RETRY_LIMIT for this run (default 2)
     geminiKeyAlias  name of the CONFIG field the Google models are using, recorded in each export
   Resolves { status: "complete" | "paused", reason, summary }. "paused" means
   something is still to do (quota reset, stopped by request, or an error);
   unresolved responses are reported in the summary, not as a pause.
 */
-async function runStage3Batch({ promptSet, io, log = console.log, delayMs = BATCH_DEFAULT_DELAY_MS, retryBackoffMs = BATCH_DEFAULT_BACKOFF_MS, shouldStop = () => false, runner = "unknown", only = null, geminiKeyAlias = "GEMINI_API_KEY" }) {
+async function runStage3Batch({ promptSet, io, log = console.log, delayMs = BATCH_DEFAULT_DELAY_MS, retryBackoffMs = BATCH_DEFAULT_BACKOFF_MS, shouldStop = () => false, runner = "unknown", only = null, geminiKeyAlias = "GEMINI_API_KEY", retryLimit = null }) {
+  if (retryLimit !== null) BATCH_RETRY_LIMIT = retryLimit;
   const modelIds = MODELS.map((m) => m.id);
   const byLabel = new Map();
   for (const run of await io.readExports()) if (run.runLabel) byLabel.set(run.runLabel, run);

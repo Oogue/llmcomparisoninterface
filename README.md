@@ -28,7 +28,19 @@ gone, so `callGroq()` is fully dormant.
   prompts and the system prompt. Two edits to D.5 are **proposed, not yet confirmed by the group**:
   Fix A (JSON output tail on the system prompt) and Fix B (prompt 4 drops "Create an outline I can
   base my writing on, and").
-- **The 120-response run:** see [Formal evaluation batch](#formal-evaluation-batch-stage-3).
+- **The 120-response run: complete (2026-09-26).** All 120 responses (10 prompts × 3 runs × 4 finalists) are in
+  `stage3-evidence/exports/`; 65 succeeded on the first pass and 55 were recovered by re-sends, none unresolved.
+  See [Formal evaluation batch](#formal-evaluation-batch-stage-3) and `stage3-evidence/RUN-LOG.md` /
+  `NOTES.md`.
+- **Google's free tier caps each model at 20 requests a day per project** (429
+  `GenerateRequestsPerDayPerProjectPerModel-FreeTier`, found live on 2026-09-25). 30 sends can't reach
+  gemini-3.5-flash or gemini-2.5-flash in one day, so the run used four Google API keys from different
+  accounts. Which `config.js` field each pass used is recorded in `batch.geminiKeyAlias` in the exports.
+  One of those accounts gets HTTP 404 on gemini-2.5-flash ("no longer available to new users"). **Billing
+  status of the extra accounts isn't visible through the API — check none has billing on** (Stage 2's guide
+  requires free tier only).
+- **Rating (formal evaluation scoring):** blind sheets for the 4 raters are in `stage3-evidence/rating/`
+  (see `stage3/RATER-GUIDE.md`); `node stage3/tally_formal.mjs` produces the result. No ratings exist yet.
 
 ## Models used
 
@@ -194,17 +206,17 @@ re-tested.
 ### Shared infrastructure
 
 - **Client-side timeout.** `callOpenAICompatChat()` aborts any in-flight request after
-  `REQUEST_TIMEOUT_MS` (40 s) via `AbortController`, instead of waiting indefinitely on a stuck
+  `REQUEST_TIMEOUT_MS` (now 180 s; 40 s until 2026-09-25) via `AbortController`, instead of waiting indefinitely on a stuck
   upstream. A timed-out call surfaces as the "CORS/Network" card state (see
   [How to use](#how-to-use)), with a message naming the timeout explicitly so it doesn't read as a
-  real CORS block. `timeoutMs` can override this per card; currently only the two Gemma cards do
-  (90 s).
+  real CORS block. `timeoutMs` can override this per card; no active card does now (the Gemma 26B card's 90 s
+  override was dropped on 2026-09-25 — see the current-status section).
 - **Fixed request conditions.** `temperature: 0` and `max_tokens: MAX_TOKENS` (7400) are both
   spread into the request body *after* `extraBody`, so nothing a card passes can override them.
-  They apply to all 7 cards through the one shared builder.
+  They apply to every card through the one shared builder (7 during Stage 1/2, the 4 finalists now).
 - **Retries** (each adapter retries only errors that are known to clear):
   - `callGeminiCompat()`: HTTP `500` / `503`, 3 attempts, 5 s apart.
-  - `callGroq()`: HTTP `429`, 3 attempts, 20 s apart.
+  - `callGroq()`: HTTP `429`, 3 attempts, 20 s apart (fully dormant since Stage 2 — no finalist uses Groq).
   - `callOpenRouter()`: HTTP `429` and "HTTP 200 with an error body", 3 attempts, 5 s apart (see
     [CORS notes](#cors-notes)).
 - **`reasoning_effort` support.** `callOpenAICompatChat()` accepts an `extraBody` object merged into
@@ -216,7 +228,7 @@ re-tested.
 
 To swap models, edit the `MODELS` array at the top of `script.js` — each entry defines its display
 name, provider, architecture badge, key, and call function (optionally taking a 4th `extraBody`
-argument and a 5th `timeoutMs` argument). All 7 current candidates go through the one shared
+argument and a 5th `timeoutMs` argument). All 4 current finalists go through the one shared
 `callOpenAICompatChat()` builder (Groq, OpenRouter, and Gemini's OpenAI-compat layer are all
 confirmed OpenAI-shaped; NVIDIA NIM, Cohere, Mistral, and DeepSeek's native endpoint are also
 compatible but currently unused).
@@ -298,11 +310,19 @@ Node has no CORS, so it can't show a browser-side CORS problem; Stage 1/2 alread
 Each export from the batch carries a `batch` field (`stage`, `promptId`, `run`, `attempt`,
 `runner`) saying which runner produced it.
 
+- **Options** (headless runner): `--gemini-key=<config.js field>` picks which Google key to use (only its
+  name is recorded); `--retry-limit=N` allows more re-sends (default 2), for failures caused by the
+  runner's own machine rather than the API.
 - **Failures** follow the Stage 2 convention: a send with an API failure (after the adapters' own
   retries) is exported anyway, then only the failed models are re-sent after a 60 s / 120 s backoff
   as `S3-P<n>-run<n>-retry` and `-retry2`. A retry only fills in a response that failed with an
   API error; a badly formatted response is a result, not a failure, and is never re-sent. Anything
   still failing after `-retry2` is listed as unresolved in `RUN-LOG.md`.
+- **Quota limits are not retried.** A daily-quota 429 (Google or OpenRouter), or a model a key can't
+  serve (HTTP 404 "no longer available to new users"), sets that model aside for the session while the
+  others carry on; running the batch again (or with another key) fills the gaps in as `-retryN` sends.
+- **Keep the machine awake.** A laptop sleeping mid-run stalls the timers (a 180 s timeout took up to
+  ~53 min on 2026-09-25) and causes spurious timeouts.
 - **Pacing:** 20 s minimum between sends (adjustable). If OpenRouter's free-model quota runs low,
   the batch **pauses** rather than spend the last requests; run it again after the daily reset and
   it resumes from what is already in `exports/`.
@@ -366,7 +386,8 @@ been silently recorded as a successful empty response in an exported run.
 - `script.js` - Model registry, send logic, history, provider adapters
 - `batch.js` - Stage 3 batch runner: loops Send to All over the D.5 prompts, retries, pacing, quota pause, RUN-LOG.md
 - `stage3/` - `prompts.json` / `STAGE3-D5-PROMPTS.md` (the 10 D.5 prompts + system prompt), `run_headless.mjs` (Node runner and live test)
-- `stage3-evidence/` - Stage 3 exports and run log (separate from Stage 2's)
+- `stage3/make_rating_sheets_formal.mjs`, `stage3/tally_formal.mjs`, `stage3/RATER-GUIDE.md` - formal-evaluation rating: blind sheets for 4 raters (1–5), tally with Krippendorff's α; `stage3/rubric.json` holds the D.1 descriptors
+- `stage3-evidence/` - Stage 3 exports, run log and rating sheets (separate from Stage 2's)
 - `nim-proxy.js` - Minimal local CORS proxy for NVIDIA NIM (currently inert — no active card routes through NIM, see CORS notes)
 - `config.js` - Your API keys (gitignored)
 - `config.example.js` - Safe template committed to the repo

@@ -1,6 +1,21 @@
-# Stage 3 rating sheets — proposal (nothing built yet)
+# Stage 3 rating sheets — proposal (now built; decisions below)
 
-For Allen / Nathanael to confirm before any rating-sheet code is written.
+**Status 2026-09-26: confirmed and built.** Decisions from Allen:
+
+1. **Order:** one shared order for all four raters.
+2. **Overall score:** "average across all the ratings". Implemented as the mean of the five criterion scores (each
+   criterion counts equally) as the headline, with the pooled mean of every raw rating reported alongside, since
+   the wording can mean either and they weight Consistency very differently. The results say if they rank the
+   models differently.
+3. **Raters:** Allen, Nian, Lui, Emman.
+4. **Reliability:** Krippendorff's α (ordinal), per criterion.
+5. **Sheet A before Sheet B:** not answered; written into the rater guide as the default.
+
+Built: `stage3/make_rating_sheets_formal.mjs`, `stage3/tally_formal.mjs`, `stage3/lib/common.mjs`,
+`stage3/rubric.json` (D.1 descriptors, extracted from the manuscript), `stage3/RATER-GUIDE.md`.
+Generated: `stage3-evidence/rating/` (seeds 20260926 for Sheet A, 20260927 for Sheet B).
+
+The rest of this file is the original proposal.
 
 ## 1. What the Stage 2 scripts assume today
 

@@ -1,0 +1,47 @@
+{
+  "runLabel": "S3-P8-run1-retry",
+  "timestamp": "2026-09-25T13:19:49.294Z",
+  "appVersion": "stage3-v1.0 (4 Stage 2 finalists), export schema 2 — 2026-09-25",
+  "fixedConditions": {
+    "temperature": 0,
+    "max_tokens": 7400,
+    "providerJsonMode": false
+  },
+  "systemPrompt": "You are an academic task planning assistant. Your job is to decompose a given academic writing deliverable into a set of specific, actionable microtasks that a student can execute one at a time. Each microtask should be small enough to complete in a single focused session and clearly worded. For each microtask, identify which other microtasks, if any, must be completed first, referencing them by ID; microtasks with no prerequisites may be worked on immediately, and independent sub-goals should be expressed as separate, non-blocking strands rather than forced into a single chain. Do not give advice, explanations, or motivational language. Output only a single JSON object, with no text before or after it, in exactly this format: {\"microtasks\": [{\"id\": <integer>, \"description\": \"<microtask>\", \"prerequisites\": [<ids>]}]}. Use an empty array for microtasks with no prerequisites.",
+  "userPrompt": "I need to write the Results and Discussion chapter for a research paper on group conformity in decision-making among university students. We ran a controlled group experiment with 80 participants and found that individuals were significantly more likely to change their answer when exposed to unanimous incorrect group responses, along with several recurring themes from follow-up interviews about social pressure. Break this down into microtasks for presenting the quantitative results, discussing the qualitative themes, and connecting both back to the research questions, noting which microtasks depend on others and which can be worked on independently.",
+  "responses": [
+    {
+      "modelId": "gemini-3-5-flash",
+      "modelName": "gemini-3.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-3.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": null,
+      "ms": 259582,
+      "error": "Timed out after 180000ms waiting for a response",
+      "networkError": true
+    },
+    {
+      "modelId": "gemini-2-5-flash",
+      "modelName": "gemini-2.5-flash",
+      "provider": "Google",
+      "architecture": "Dense Transformer",
+      "upstreamModelId": "gemini-2.5-flash",
+      "requestParams": null,
+      "timeoutMs": 180000,
+      "text": "```json\n{\n  \"microtasks\": [\n    {\n      \"id\": 1,\n      \"description\": \"Create a preliminary outline for the 'Results and Discussion' chapter, including main headings and subheadings.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 2,\n      \"description\": \"Prepare all necessary tables and figures (e.g., descriptive statistics, inferential test results) for the quantitative results section.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 3,\n      \"description\": \"Review interview transcripts or notes to identify and consolidate recurring qualitative themes related to social pressure.\",\n      \"prerequisites\": []\n    },\n    {\n      \"id\": 4,\n      \"description\": \"Select compelling and representative quotes from the interviews to illustrate each identified qualitative theme.\",\n      \"prerequisites\": [\n        3\n      ]\n    },\n    {\n      \"id\": 5,\n      \"description\": \"Draft an introductory paragraph for the quantitative results section, briefly stating what findings will be presented.\",\n      \"prerequisites\": [\n        1\n      ]\n    },\n    {\n      \"id\": 6,\n      \"description\": \"Write paragraphs presenting the descriptive statistics of the participant sample and initial responses.\",\n      \"prerequisites\": [\n        2,\n        5\n      ]\n    },\n    {\n      \"id\": 7,\n      \"description\": \"Write paragraphs detailing the inferential statistical analysis, focusing on the significant likelihood of answer change when exposed to unanimous incorrect group responses.\",\n      \"prerequisites\": [\n        2,\n        6\n      ]\n    },\n    {\n      \"id\": 8,\n      \"description\": \"Write a brief summary paragraph for the quantitative results section, reiterating the key findings.\",\n      \"prerequisites\": [\n        7\n      ]\n    },\n    {\n      \"id\": 9,\n      \"description\": \"Draft an introductory paragraph for the qualitative results section, explaining the method of analysis and what themes will be presented.\",\n      \"prerequisites\": [\n        1\n      ]\n    },\n    {\n      \"id\": 10,\n      \"description\": \"Describe the first recurring qualitative theme identified from the interviews, supported by selected quotes.\",\n      \"prerequisites\": [\n        4,\n        9\n      ]\n    },\n    {\n      \"id\": 11,\n      \"description\": \"Describe the second recurring qualitative theme identified from the interviews, supported by selected quotes.\",\n      \"prerequisites\": [\n        4,\n        10\n      ]\n    },\n    {\n      \"id\": 12,\n      \"description\": \"Describe the third recurring qualitative theme identified from the interviews, supported by selected quotes.\",\n      \"prerequisites\": [\n        4,\n        11\n      ]\n    },\n    {\n      \"id\": 13,\n      \"description\": \"Write a brief summary paragraph for the qualitative results section, reiterating the key themes.\",\n      \"prerequisites\": [\n        12\n      ]\n    },\n    {\n      \"id\": 14,\n      \"description\": \"Draft an introductory paragraph for the Discussion section, briefly restating the main purpose of the study and previewing the discussion points.\",\n      \"prerequisites\": [\n        8,\n        13\n      ]\n    },\n    {\n      \"id\": 15,\n      \"description\": \"Discuss the quantitative findings, interpreting their meaning in the context of group conformity and relating them back to the research questions.\",\n      \"prerequisites\": [\n        8,\n        14\n      ]\n    },\n    {\n      \"id\": 16,\n      \"description\": \"Discuss the qualitative findings, interpreting their implications for understanding social pressure and relating them back to the research questions.\",\n      \"prerequisites\": [\n        13,\n        14\n      ]\n    },\n    {\n      \"id\": 17,\n      \"description\": \"Integrate the quantitative and qualitative findings, discussing how they complement, explain, or contrast with each other.\",\n      \"prerequisites\": [\n        15,\n        16\n      ]\n    },\n    {\n      \"id\": 18,\n      \"description\": \"Identify and discuss the limitations of the study (e.g., sample size, specific context, experimental design).\",\n      \"prerequisites\": [\n        17\n      ]\n    },\n    {\n      \"id\": 19,\n      \"description\": \"Propose directions for future research based on the study's findings and limitations.\",\n      \"prerequisites\": [\n        18\n      ]\n    },\n    {\n      \"id\": 20,\n      \"description\": \"Write a concluding paragraph for the entire 'Results and Discussion' chapter, summarizing the main contributions and broader implications.\",\n      \"prerequisites\": [\n        19\n      ]\n    },\n    {\n      \"id\": 21,\n      \"description\": \"Review the entire 'Results and Discussion' chapter for overall coherence, logical flow, and smooth transitions between sections.\",\n      \"prerequisites\": [\n        20\n      ]\n    },\n    {\n      \"id\": 22,\n      \"description\": \"Check for consistency in terminology, formatting, and citation style throughout the chapter.\",\n      \"prerequisites\": [\n        21\n      ]\n    },\n    {\n      \"id\": 23,\n      \"description\": \"Proofread the chapter for grammar, spelling, punctuation, and typographical errors.\",\n      \"prerequisites\": [\n        22\n      ]\n    }\n  ]\n}\n```",
+      "ms": 18273,
+      "error": null
+    }
+  ],
+  "batch": {
+    "stage": "stage3",
+    "promptId": "S3-P8",
+    "run": 1,
+    "attempt": 1,
+    "runner": "headless-node",
+    "geminiKeyAlias": "GEMINI_API_KEY"
+  }
+}
